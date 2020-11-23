@@ -14,6 +14,7 @@ export default {
         plugins: [
           {
             // capture and emit chartJS events
+            id: 'vue3-charjs-event-hooks',
             beforeInit: () => emit('beforeInit'),
             afterInit: () => emit('afterInit'),
             beforeUpdate: () => emit('beforeUpdate'),
@@ -48,7 +49,9 @@ export default {
     },
     data: {},
     options: {},
-    plugins: []
+    plugins: {
+      default: []
+    }
   },
   mounted () {
     this.render()

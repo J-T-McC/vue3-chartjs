@@ -1,0 +1,39 @@
+{
+  "name": "vue3-chartjs",
+  "version": "1.0.0",
+  "description": "Vue3 wrapper for chartjs",
+  "main": "dist/vue3-chartjs.js",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "yarn lint && cross-env NODE_ENV=production webpack --progress --config  ./webpack.js --mode production",
+    "dev": "node build/dev-server.js",
+    "test": "yarn run unit",
+    "lint": "eslint src/** --ext .js",
+    "prepublishOnly": "yarn run lint && yarn run test && yarn run build"
+  },
+  "peerDependencies": {
+    "chart.js": "~2.9.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.7",
+    "@babel/preset-env": "^7.12.7",
+    "babel-loader": "^8.2.1",
+    "chart.js": "^2.9.4",
+    "cross-env": "^7.0.2",
+    "eslint": "^7.14.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-vue": "^7.1.0",
+    "vue": "^3.0.0",
+    "vue-loader": "^15.9.5",
+    "webpack": "^5.6.0",
+    "webpack-cli": "^4.2.0"
+  }
+}

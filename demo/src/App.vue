@@ -1,27 +1,27 @@
 <template>
   <div style="height:600px;width: 600px;">
-    <Vue3ChartJS
+    <vue3-chart-js
         v-bind="{...barChart}"
         @before-init="bar"
-    ></Vue3ChartJS>
+    ></vue3-chart-js>
 
-    <Vue3ChartJS
+    <vue3-chart-js
         v-bind="{...doughnutChart}"
         @before-init="doughtnut"
-    ></Vue3ChartJS>
+    ></vue3-chart-js>
 
-    <button type="submit" @click="updateDoughnut">TEST</button>
+    <button type="submit" @click="updateDoughnut">Update Doughnut Data</button>
   </div>
 </template>
 
 <script>
 
-import Vue3ChartJS from 'vue3-chartjs'
+import Vue3ChartJs from 'vue3-chartjs'
 
 export default {
   name: 'App',
   components: {
-    Vue3ChartJS
+    Vue3ChartJs
   },
   setup() {
     return {
@@ -99,7 +99,7 @@ export default {
       this.doughnutChart = {
         type: 'doughnut',
         data: {
-          labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+          labels: ['VueJs3', 'EmberJs', 'ReactJs', 'AngularJs'],
           datasets: [
             {
               backgroundColor: [
@@ -117,14 +117,3 @@ export default {
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

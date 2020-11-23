@@ -1,8 +1,8 @@
 import Chart from 'chart.js'
 import { h } from 'vue'
 
-export default {
-  name: 'vue3-chartjs',
+const Vue3ChartJs = {
+  name: 'Vue3ChartJs',
   render () {
     return h('canvas')
   },
@@ -14,7 +14,7 @@ export default {
         plugins: [
           {
             // capture and emit chartJS events
-            id: 'vue3-charjs-event-hooks',
+            id: 'vue3-chartjs-event-hooks',
             beforeInit: () => emit('beforeInit'),
             afterInit: () => emit('afterInit'),
             beforeUpdate: () => emit('beforeUpdate'),
@@ -100,3 +100,5 @@ export default {
     }
   }
 }
+
+export default Vue3ChartJs

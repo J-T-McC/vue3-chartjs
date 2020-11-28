@@ -87,7 +87,6 @@ describe('chart reload', () => {
     }
 
     await new Promise(resolve => setTimeout(resolve, 500))
-    console.log(wrapper.emitted('after-update').length)
     expect(wrapper.emitted('after-update').length).toEqual(2)
   })
 })

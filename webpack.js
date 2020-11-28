@@ -1,13 +1,11 @@
-const webpack = require('webpack')
 const path = require('path')
-
-function resolve (dir) {
-  return path.join(__dirname, '..', dir)
-}
+const webpack = require('webpack')
+const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
+  mode: process.env.NODE_ENV,
   entry: {
-    'vue3-chartjs': './src/index.js'
+    'vue3-chartjs': './src/Vue3ChartJs.vue'
   },
   devtool: 'source-map',
   output: {
@@ -25,28 +23,28 @@ module.exports = {
     }
   },
   resolve: {
-    extensions: ['.js']
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    }
   },
   module: {
     rules: [
       {
+        test: /\.vue$/,
+        use: 'vue-loader'
+      },
+      {
         test: /\.js$/,
-        exclude: /(node_modules)/,
-        loader: 'babel-loader',
-        include: [resolve('src')]
+        use: 'babel-loader'
       }
     ]
   },
   plugins: [
-    new webpack.optimize.ModuleConcatenationPlugin()
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new VueLoaderPlugin(),
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: 'true',
+      __VUE_PROD_DEVTOOLS__: 'false'
+    })
   ]
 }
-
-// delete module.exports.devtool
-module.exports.plugins = [
-  new webpack.DefinePlugin({
-    'process.env': {
-      NODE_ENV: '"production"'
-    }
-  })
-]

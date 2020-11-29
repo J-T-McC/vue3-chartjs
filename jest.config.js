@@ -6,5 +6,6 @@ module.exports = {
     '^.+\\js$': 'babel-jest'
   },
   setupFiles: ['jest-canvas-mock'],
-  collectCoverage: true
+  collectCoverage: true,
+  coverageReporters: ['lcov', 'text-summary']
 }

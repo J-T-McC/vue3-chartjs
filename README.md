@@ -2,6 +2,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main)](https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main)
 [![Build Status](https://travis-ci.org/J-T-McC/vue3-chartjs.svg?branch=main)](https://travis-ci.org/J-T-McC/vue3-chartjs)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
 
 Basic [ChartJS](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 

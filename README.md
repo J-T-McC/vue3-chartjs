@@ -1,4 +1,7 @@
-# Vue3 ChartJS Wrapper 
+# Vue3 ChartJS Wrapper
+
+[![Coverage Status](https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main)](https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main)
+[![Build Status](https://travis-ci.org/J-T-McC/vue3-chartjs.svg?branch=main)](https://travis-ci.org/J-T-McC/vue3-chartjs)
 
 Basic [ChartJS](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
@@ -78,3 +81,7 @@ Emits [ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.ht
     //beforeInit chartjs event example
     <vue3-chart-js v-bind="{...doughnutChart}"  @before-init="myMethod"></vue3-chart-js>
 ```
+
+## License
+
+MIT

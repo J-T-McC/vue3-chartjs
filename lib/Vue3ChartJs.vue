@@ -1,11 +1,9 @@
 <script>
-import { h, ref, reactive, onMounted, onUnmounted, defineComponent } from 'vue'
+import { h, ref, reactive, onMounted, defineComponent } from 'vue'
 import { chartJsEventNames, kebabCase } from './includes'
 import Chart from 'chart.js'
 
-const emits = chartJsEventNames.map((chartJsEvent) => {
-  return kebabCase(chartJsEvent)
-})
+const emits = chartJsEventNames.map(chartJsEvent => kebabCase(chartJsEvent))
 
 const Vue3ChartJs = defineComponent({
   name: 'Vue3ChartJs',
@@ -38,8 +36,9 @@ const Vue3ChartJs = defineComponent({
     //inject plugin to emit chart.js events
     const chartJsEventsPlugin = chartJsEventNames
         .reduce((previous, current) => {
-          const eventToPush = {}
-          eventToPush[current] = () => emit(kebabCase(current), chartRef)
+          const eventToPush = {
+            [current]: () => emit(kebabCase(current), chartRef)
+          }
           return { ...previous, ...eventToPush }
         }, {})
 
@@ -56,7 +55,11 @@ const Vue3ChartJs = defineComponent({
     const update = () => state.chart && state.chart.update()
 
     const render = () => {
-      destroy()
+
+      if(state.chart) {
+        return state.chart.update()
+      }
+
       state.chart = new Chart(
           chartRef.value.getContext('2d'), {
             type: props.type,
@@ -65,6 +68,7 @@ const Vue3ChartJs = defineComponent({
             plugins: state.plugins
           }
       )
+
     }
 
     const debouncedReload = (fn, timeout) => {
@@ -75,7 +79,6 @@ const Vue3ChartJs = defineComponent({
     }
 
     onMounted(() => render())
-    onUnmounted(() => destroy())
 
     return {
       state,

@@ -13,7 +13,6 @@
     ></vue3-chart-js>
 
     <button type="submit" @click="updateChart">Update Doughnut Data</button>
-    <br><br>
 
   </div>
 </template>

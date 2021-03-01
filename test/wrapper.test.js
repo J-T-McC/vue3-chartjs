@@ -28,6 +28,18 @@ describe('init', () => {
 })
 
 describe('chart reload', () => {
+
+  it('reloads if already exists', async () => {
+    const wrapper = factory(doughnutProps)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.emitted('after-init').length).toEqual(1)
+    expect(wrapper.emitted('after-update').length).toEqual(1)
+    wrapper.vm.render()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.emitted('after-update').length).toEqual(2)
+    expect(wrapper.emitted('after-init').length).toEqual(1)
+  })
+
   it('reloads chart on series change', async () => {
     const wrapper = factory(doughnutProps)
     await wrapper.vm.$nextTick()
@@ -119,8 +131,8 @@ describe('events', () => {
     expect(wrapper.emitted('before-init').length).toBeTruthy()
   })
 
-  it('destroys chart on unmount', () => {
-    wrapper.unmount()
+  it('destroys chart', () => {
+    wrapper.vm.destroy()
     expect(wrapper.emitted('destroy').length).toBeTruthy()
   })
 })

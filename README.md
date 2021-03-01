@@ -24,7 +24,7 @@ export default {
   components: {
     Vue3ChartJs
   },
-  data () {
+  setup () {
     return {
       doughnutChart: {
         id: 'myDoughnut',

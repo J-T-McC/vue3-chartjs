@@ -1,19 +1,26 @@
 import { expect, it, describe } from '@jest/globals'
-import { defineComponent } from 'vue'
 import { mount } from '@vue/test-utils'
-import Vue3ChartJs from '../src/Vue3ChartJs.vue'
+import Vue3ChartJs from '../lib/main'
+
+import { createApp } from 'vue'
 
 import { doughnutProps } from './chart.props'
-import { kebabCase } from '../src/includes'
+import { kebabCase } from '../lib/includes'
 
 const factory = function (props) {
-  const component = defineComponent(Vue3ChartJs)
-  return mount(component, {
+  return mount(Vue3ChartJs, {
     propsData: { ...props }
   })
 }
 
 describe('init', () => {
+
+  it('installs globally', () => {
+    const App = createApp({})
+    App.use(Vue3ChartJs)
+    expect(App._context.components.hasOwnProperty(Vue3ChartJs.name)).toBeTruthy()
+  })
+
   it('renders', () => {
     const wrapper = factory(doughnutProps)
     expect(wrapper.vm.state.chart).toBeTruthy()
@@ -82,15 +89,16 @@ describe('chart reload', () => {
 })
 
 describe('methods', () => {
-  const wrapper = factory(doughnutProps)
 
   it('destroys chart', () => {
+    const wrapper = factory(doughnutProps)
     expect(wrapper.vm.state.chart).toBeTruthy()
     wrapper.vm.destroy()
     expect(wrapper.emitted('destroy').length).toBeTruthy()
   })
 
-  it('updates if chart exists', () => {
+  it('updates if chart exists', async () => {
+    const wrapper = factory(doughnutProps)
     expect(wrapper.emitted('after-update').length).toEqual(1)
     wrapper.vm.update()
     expect(wrapper.emitted('after-update').length).toEqual(2)

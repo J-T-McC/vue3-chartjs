@@ -6,6 +6,14 @@
 
 Basic [ChartJS](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
+## Installation
+
+```shell script
+yarn add @j-t-mcc/vue3-chartjs
+
+npm install @j-t-mcc/vue3-chartjs
+```
+
 ## Configuration
 
 Arguments are passed as-is to the instance of ChartJS. View [Examples](https://www.chartjs.org/docs/latest/getting-started/usage.html).
@@ -57,7 +65,7 @@ Event listeners are converted to camelcase in Vue3. Events marked as "cancellabl
 </template>
 
 <script>
-import Vue3ChartJs from 'vue3-chartjs'
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 
 export default {
   name: 'App',
@@ -121,7 +129,7 @@ export default {
 
 <script>
 import { ref } from 'vue'
-import Vue3ChartJs from 'vue3-chartjs'
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 
 export default {
   name: 'App',

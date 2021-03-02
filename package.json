@@ -1,9 +1,14 @@
 {
-  "name": "vue3-chartjs",
-  "version": "1.0.0",
+  "name": "@j-t-mcc/vue3-chartjs",
+  "version": "0.1.1",
   "author": "Tyson McCarney <info@tysonmccarney.com> (https://tysonmccarney.com)",
   "description": "Vue3 wrapper for Chart.js",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/J-T-McC/vue3-chartjs"
+  },
+  "homepage": "https://github.com/J-T-McC/vue3-chartjs/blob/main/README.md",
   "keywords": [
     "chart.js",
     "vue3"

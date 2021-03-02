@@ -19,27 +19,27 @@
 
 <script>
 
-import {ref} from 'vue'
-import Vue3ChartJs from '../lib/main';
+import { ref } from 'vue'
+import Vue3ChartJs from '../lib/main'
 
-import {barChart, doughnutChart} from './charts.js'
+import { barChart, doughnutChart } from './charts.js'
 
 export default {
   name: 'App',
   components: {
     Vue3ChartJs,
   },
-  setup() {
+  setup () {
 
-    const beforeInit = (chartRef) => {
-      console.log('chart is before init', chartRef)
+    const beforeInit = (e) => {
+      console.log('chart is before init', e)
     }
 
-    const beforeUpdate = (chartRef) => {
-      console.log("beforeUpdate", chartRef)
+    const beforeUpdate = (e) => {
+      console.log('beforeUpdate', e)
     }
 
-    let localDoughnutChartOptions = {...doughnutChart}
+    let localDoughnutChartOptions = { ...doughnutChart }
 
     const chartRef = ref(null)
 
@@ -62,15 +62,15 @@ export default {
         }
       ]
 
-      chartRef.value.update();
+      chartRef.value.update()
     }
 
     return {
-      beforeInit,
-      beforeUpdate,
-      updateChart,
       barChart,
       localDoughnutChartOptions,
+      updateChart,
+      beforeInit,
+      beforeUpdate,
       chartRef
     }
   },

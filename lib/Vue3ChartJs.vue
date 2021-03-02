@@ -1,9 +1,7 @@
 <script>
-import { h, ref, reactive, onMounted, defineComponent } from 'vue'
-import { chartJsEventNames, kebabCase } from './includes'
+import { h, ref, onMounted, readonly, defineComponent } from 'vue'
+import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes'
 import Chart from 'chart.js'
-
-const emits = chartJsEventNames.map(chartJsEvent => kebabCase(chartJsEvent))
 
 const Vue3ChartJs = defineComponent({
   name: 'Vue3ChartJs',
@@ -29,77 +27,70 @@ const Vue3ChartJs = defineComponent({
       }
     }
   },
-  emits,
+  emits: chartJsEventNames,
   setup (props, { emit }) {
     const chartRef = ref(null)
 
-    //inject plugin to emit chart.js events
+    //generate chart.js plugin to emit lib events
     const chartJsEventsPlugin = chartJsEventNames
-        .reduce((previous, current) => {
-          const eventToPush = {
-            [current]: () => emit(kebabCase(current), chartRef)
-          }
-          return { ...previous, ...eventToPush }
-        }, {})
+        .reduce((reduced, eventType) => {
+          const event = generateEventObject(eventType, chartRef)
+          return { ...reduced, ...generateChartJsEventListener(emit, event) }
+        }, { id: 'Vue3ChartJsEventHookPlugin' })
 
-    const state = reactive({
+    const state = {
       chart: null,
       debouncedID: null,
       plugins: [
         chartJsEventsPlugin,
         ...props.plugins
-      ]
-    })
+      ],
+      //clone props for chart use due to chart.js mutations
+      props: { ...props }
+    }
 
-    const destroy = () => state.chart && state.chart.destroy()
-    const update = () => state.chart && state.chart.update()
+    const destroy = () => {
+      if (state.chart) {
+        state.chart.destroy()
+        state.chart = null
+      }
+    }
+
+    const update = () => {
+      //merge component props into chart.js store
+      state.props = { ...state.props, ...props }
+      state.chart.update()
+    }
+
+    const resize = () =>  state.chart && state.chart.resize()
 
     const render = () => {
-
-      if(state.chart) {
+      if (state.chart) {
         return state.chart.update()
       }
 
-      state.chart = new Chart(
+      return state.chart = new Chart(
           chartRef.value.getContext('2d'), {
-            type: props.type,
-            data: props.data,
-            options: props.options,
+            type: state.props.type,
+            data: state.props.data,
+            options: state.props.options,
             plugins: state.plugins
           }
       )
-
-    }
-
-    const debouncedReload = (fn, timeout) => {
-      if (state.debouncedID) {
-        window.clearTimeout(state.debouncedID)
-      }
-      state.debouncedID = window.setTimeout(() => fn(), timeout)
     }
 
     onMounted(() => render())
 
     return {
-      state,
+      state: readonly(state),
       chartRef,
       render,
+      resize,
       update,
       destroy,
-      debouncedReload
     }
   },
-  watch: {
-    'data.data': {
-      handler: function () {
-        return this.debouncedReload(() => {
-          this.state.chart.data = this.data
-          this.update()
-        }, 500)
-      },
-      deep: true
-    }
-  },
+
   render () {
     return h('canvas', {
       ref: 'chartRef'

@@ -1,11 +1,8 @@
-.DS_Store
-demo/node_modules
-demo/dist
 node_modules
-
-# local env files
-.env.local
-.env.*.local
+coverage
+.DS_Store
+dist-ssr
+*.local
 
 # Log files
 npm-debug.log*
@@ -21,4 +18,3 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-/coverage/

@@ -6,81 +6,177 @@
 
 Basic [ChartJS](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
-## Usage example
-
-```vue
-
-<template>
-  <div>
-    <vue3-chart-js v-bind="{...doughnutChart}"></vue3-chart-js>
-  </div>
-</template>
-
-<script>
-
-import Vue3ChartJs from 'vue3-chartjs'
-
-export default {
-  components: {
-    Vue3ChartJs
-  },
-  data () {
-    return {
-      doughnutChart: {
-        id: 'myDoughnut',
-        type: 'doughnut',
-        data: {
-          labels: ['Apple', 'Cheese', 'Cat', 'Window'],
-          datasets: [
-            {
-              backgroundColor: [
-                '#41B883',
-                '#E46651',
-                '#00D8FF',
-                '#DD1B16'
-              ],
-              data: [40, 20, 80, 10]
-            }
-          ]
-        }
-      }
-    }
-  }
-}
-</script>
-
-
-```
-
 ## Configuration
 
-Properties are passed as-is to the instance of ChartJS. View [Examples](https://www.chartjs.org/docs/latest/getting-started/usage.html).
-
-External changes to ```data``` will trigger a chart reload. 
+Arguments are passed as-is to the instance of ChartJS. View [Examples](https://www.chartjs.org/docs/latest/getting-started/usage.html).
 
 ```js
-
   props: {
-    type: {
-      type: String,
-      required: true
-    },
-    data: {},
-    options: {},
-    plugins: {
-      default: []
-    }
-  }
-
+     type: {
+       type: String,
+       required: true
+     },
+     data: {
+       type: Object,
+       required: true
+     },
+     options: {
+       type: Object,
+       default () {
+         return {}
+       },
+     },
+     plugins: {
+       type: Array,
+       default () {
+         return []
+       }
+     }
+   }
 ```
 
 ## Events
 
-Emits [ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.html#plugin-core-api)
+A default event hook plugin is injected into each chart object and emits the following: [ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.html#plugin-core-api)
+
+Event listeners are converted to camelcase in Vue3. Events marked as "cancellable" can be "canceled" by the calling preventDefault method on the event parameter.
+
+## Examples
+
+### Basic Chart
+```vue
+<template>
+  <div style="height:600px;width: 600px;">
+    <vue3-chart-js
+        :id="doughnutChart.id"
+        :type="doughnutChart.type"
+        :data="doughnutChart.data"
+        @before-render="beforeRenderLogic"
+    ></vue3-chart-js>
+  </div>
+</template>
+
+<script>
+import Vue3ChartJs from 'vue3-chartjs'
+
+export default {
+  name: 'App',
+  components: {
+    Vue3ChartJs,
+  },
+  setup () {
+    const doughnutChart = {
+      id: 'doughnut',
+      type: 'doughnut',
+      data: {
+        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+        datasets: [
+          {
+            backgroundColor: [
+              '#41B883',
+              '#E46651',
+              '#00D8FF',
+              '#DD1B16'
+            ],
+            data: [40, 20, 80, 10]
+          }
+        ]
+      }
+    }
+  
+    const beforeRenderLogic = (event) => {
+      //...
+      //if(a === b) {
+      //  event.preventDefault()
+      //}   
+    }    
+
+    return {
+      doughnutChart,
+      beforeRenderLogic
+    }
+  },
+}
+</script>
+
+```
+
+### Updating chart
+
+[Updating Charts](https://www.chartjs.org/docs/latest/developers/updates.html)
 
 ```vue
-    //beforeInit chartjs event example
-    <vue3-chart-js v-bind="{...doughnutChart}"  @before-init="myMethod"></vue3-chart-js>
+<template>
+  <div style="height:600px;width: 600px;display: flex;flex-direction:column;">
+    <vue3-chart-js
+        :id="doughnutChart.id"
+        ref="chartRef"
+        :type="doughnutChart.type"
+        :data="doughnutChart.data"
+    ></vue3-chart-js>
+
+    <button @click="updateChart">Update Chart</button>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue'
+import Vue3ChartJs from 'vue3-chartjs'
+
+export default {
+  name: 'App',
+  components: {
+    Vue3ChartJs,
+  },
+  setup () {
+    const chartRef = ref(null)
+
+    const doughnutChart = {
+      id: 'doughnut',
+      type: 'doughnut',
+      data: {
+        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+        datasets: [
+          {
+            backgroundColor: [
+              '#41B883',
+              '#E46651',
+              '#00D8FF',
+              '#DD1B16'
+            ],
+            data: [40, 20, 80, 10]
+          }
+        ]
+      }
+    }
+
+    const updateChart = () => {
+      doughnutChart.data.labels = ['Cats', 'Dogs', 'Hamsters', 'Dragons']
+      doughnutChart.data.datasets = [
+        {
+          backgroundColor: [
+            '#333333',
+            '#E46651',
+            '#00D8FF',
+            '#DD1B16'
+          ],
+          data: [100, 20, 800, 20]
+        }
+      ]
+
+      chartRef.value.update()
+    }
+
+    return {
+      doughnutChart,
+      updateChart,
+      chartRef
+    }
+  },
+}
+</script>
+
+
 ```
 
 ## License

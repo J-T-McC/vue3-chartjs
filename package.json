@@ -1,46 +1,68 @@
 {
   "name": "vue3-chartjs",
   "version": "1.0.0",
-  "description": "Vue3 wrapper for chartjs",
-  "main": "dist/vue3-chartjs.js",
+  "author": "Tyson McCarney <info@tysonmccarney.com> (https://tysonmccarney.com)",
+  "description": "Vue3 wrapper for Chart.js",
   "license": "MIT",
-  "private": true,
-  "files": [
-    "src",
-    "dist"
+  "keywords": [
+    "chart.js",
+    "vue3"
   ],
+  "files": [
+    "dist/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/vue3-chartjs.umd.js",
+  "module": "./dist/vue3-chartjs.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue3-chartjs.es.js",
+      "require": "./dist/vue3-chartjs.umd.js"
+    }
+  },
   "scripts": {
-    "build": "yarn lint && cross-env NODE_ENV=production webpack --progress --config  ./webpack.js --mode production",
-    "dev": "cross-env NODE_ENV=development webpack --progress --config  ./webpack.js --mode development",
+    "dev": "vite",
+    "build": "eslint lib/** && jest --coverage && vite build",
+    "serve": "vite preview",
     "test": "jest --coverage",
-    "lint": "eslint src/**"
+    "lint": "eslint lib/**"
   },
   "peerDependencies": {
     "chart.js": "~2.9.0",
     "vue": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.7",
-    "@babel/preset-env": "^7.12.7",
-    "@vue/compiler-sfc": "^3.0.2",
-    "@vue/test-utils": "^2.0.0-beta.10",
+    "@babel/preset-env": "^7.12.11",
+    "@vitejs/plugin-vue": "^1.1.4",
+    "@vue/compiler-sfc": "^3.0.5",
+    "@vue/test-utils": "2.0.0-rc.0",
     "babel-jest": "^26.6.3",
-    "babel-loader": "^8.2.1",
-    "chart.js": "^2.9.4",
-    "coveralls": "^3.1.0",
-    "cross-env": "^7.0.2",
+    "chart.js": "~2.9.0",
     "eslint": "^7.14.0",
-    "eslint-config-standard": "^16.0.2",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-vue": "^7.1.0",
     "jest": "^26.6.3",
     "jest-canvas-mock": "^2.3.0",
-    "vue": "^3.0.0",
-    "vue-jest": "^5.0.0-alpha.6",
-    "vue-loader": "^16.0.0-rc.2",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "prettier": "2.2.1",
+    "vite": "^2.0.1",
+    "vue": "^3.0.5",
+    "vue-jest": "^5.0.0-alpha.6"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
   }
 }

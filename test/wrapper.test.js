@@ -1,118 +1,137 @@
-import { expect, it, describe } from '@jest/globals'
-import { defineComponent } from 'vue'
+import { expect, it, describe, jest } from '@jest/globals'
 import { mount } from '@vue/test-utils'
-import Vue3ChartJs from '../src/Vue3ChartJs.vue'
+import Vue3ChartJs from '../lib/main'
+
+import { createApp, readonly } from 'vue'
 
 import { doughnutProps } from './chart.props'
-import { kebabCase } from '../src/includes'
+import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from '../lib/includes'
 
 const factory = function (props) {
-  const component = defineComponent(Vue3ChartJs)
-  return mount(component, {
+  return mount(Vue3ChartJs, {
     propsData: { ...props }
   })
 }
 
 describe('init', () => {
+
+  it('installs globally', () => {
+    const App = createApp({})
+    App.use(Vue3ChartJs)
+    expect(App._context.components.hasOwnProperty(Vue3ChartJs.name)).toBeTruthy()
+  })
+
   it('renders', () => {
     const wrapper = factory(doughnutProps)
     expect(wrapper.vm.state.chart).toBeTruthy()
   })
+
+  it('returns readonly state', () => {
+    const wrapper = factory(doughnutProps)
+    const warn = jest.spyOn(global.console, 'warn');
+
+    //attempt to set state attribute
+    wrapper.vm.state.chart = null
+
+    //confirm vue logged the warning
+    expect(warn).toHaveBeenCalled();
+
+    warn.mockReset();
+    warn.mockRestore();
+  })
 })
 
-describe('chart reload', () => {
-  it('reloads chart on series change', async () => {
+describe('chart reloading', () => {
+
+  it('reloads if already exists', async () => {
     const wrapper = factory(doughnutProps)
     await wrapper.vm.$nextTick()
-
-    expect(wrapper.emitted('after-update').length).toEqual(1)
-
-    await wrapper.setProps({
-      id: 'doughnut',
-      type: 'doughnut',
-      data: {
-        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
-        datasets: [
-          {
-            backgroundColor: [
-              '#41B883',
-              '#E46651',
-              '#00D8FF',
-              '#DD1B16'
-            ],
-            data: [20, 30, 10, 15]
-          }
-        ]
-      }
-    })
-
-    await new Promise(resolve => setTimeout(resolve, 500))
-    expect(wrapper.emitted('after-update').length).toEqual(2)
+    expect(wrapper.emitted('afterInit').length).toEqual(1)
+    expect(wrapper.emitted('afterUpdate').length).toEqual(1)
+    wrapper.vm.render()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.emitted('afterUpdate').length).toEqual(2)
+    expect(wrapper.emitted('afterInit').length).toEqual(1)
   })
 
-  it('has debounced reload on series change', async () => {
+})
+
+describe('component methods', () => {
+
+  it('destroys if chart exists', () => {
     const wrapper = factory(doughnutProps)
-    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.state.chart).toBeTruthy()
+    wrapper.vm.destroy()
+    expect(wrapper.emitted('destroy').length).toEqual(1)
 
-    expect(wrapper.emitted('after-update').length).toEqual(1)
+    wrapper.vm.destroy()
+    expect(wrapper.emitted('destroy').length).toEqual(1)
+  })
 
-    for (let i = 1; i < 5; i++) {
-      await wrapper.setProps({
-        id: 'doughnut',
-        type: 'doughnut',
-        data: {
-          labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
-          datasets: [
-            {
-              backgroundColor: [
-                '#41B883',
-                '#E46651',
-                '#00D8FF',
-                '#DD1B16'
-              ],
-              data: [20, 30, 10, 15]
-            }
-          ]
-        }
-      })
+  it('updates', () => {
+    const wrapper = factory(doughnutProps)
+    expect(wrapper.emitted('afterUpdate').length).toEqual(1)
+
+    wrapper.vm.update()
+    expect(wrapper.emitted('afterUpdate').length).toEqual(2)
+  })
+
+  it('implements prevent default for emitted chart.js hooks', () => {
+    //some chart.js hooks can be canceled by returning false
+    //library implements preventDefault on custom event object to implement this via emitted vue event
+
+    let invoked = 0
+
+    const mockEmit = (e) => {
+      invoked++
     }
-    await new Promise(resolve => setTimeout(resolve, 500))
-    expect(wrapper.emitted('after-update').length).toEqual(2)
+
+    //first event allowed
+    const eventAllowed = generateEventObject('test')
+    const pluginEventAllowed = generateChartJsEventListener(mockEmit, eventAllowed)
+    expect(pluginEventAllowed['test']()).toBeTruthy()
+
+    //second event prevented
+    const eventPrevented = generateEventObject('test')
+    eventPrevented.preventDefault()
+    const pluginEventPrevented = generateChartJsEventListener(mockEmit, eventPrevented)
+    expect(pluginEventPrevented['test']()).toBeFalsy()
+
+    expect(invoked).toEqual(2)
+
   })
 })
 
-describe('methods', () => {
+describe('emitted events', () => {
+
   const wrapper = factory(doughnutProps)
 
-  it('destroys chart', () => {
-    expect(wrapper.vm.state.chart).toBeTruthy()
+  const skipEvents = [
+    'resize',
+    'beforeEvent',
+    'afterEvent',
+    'destroy',
+  ]
+
+  chartJsEventNames
+    .filter((eventName) => !skipEvents.includes(eventName))
+    .forEach((eventName, index) => {
+      it(`emits ${eventName} events`, async () => {
+        if (!index) {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+        expect(wrapper.emitted(eventName).length).toBeTruthy()
+      })
+    })
+
+  it('emits resize event', () => {
+    wrapper.vm.resize()
+    expect(wrapper.emitted('resize').length).toBeTruthy()
+  })
+
+  it('emits destroy event', () => {
     wrapper.vm.destroy()
     expect(wrapper.emitted('destroy').length).toBeTruthy()
   })
 
-  it('updates if chart exists', () => {
-    expect(wrapper.emitted('after-update').length).toEqual(1)
-    wrapper.vm.update()
-    expect(wrapper.emitted('after-update').length).toEqual(2)
-    wrapper.vm.state.chart = null
-    wrapper.vm.update()
-    expect(wrapper.emitted('after-update').length).toEqual(2)
-  })
-})
-
-describe('events', () => {
-  const wrapper = factory(doughnutProps)
-
-  it('converts chartjs event names to kebab case', () => {
-    expect(kebabCase('beforeInit')).toEqual('before-init')
-  })
-
-  it('emits chartjs events', () => {
-    expect(wrapper.emitted('before-init').length).toBeTruthy()
-  })
-
-  it('destroys chart on unmount', () => {
-    wrapper.unmount()
-    expect(wrapper.emitted('destroy').length).toBeTruthy()
-  })
 })

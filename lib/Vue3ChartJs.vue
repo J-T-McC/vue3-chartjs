@@ -1,5 +1,5 @@
 <script>
-import { h, ref, onMounted, readonly, defineComponent } from 'vue'
+import { h, ref, onMounted, defineComponent } from 'vue'
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes'
 import Chart from 'chart.js'
 
@@ -38,9 +38,8 @@ const Vue3ChartJs = defineComponent({
           return { ...reduced, ...generateChartJsEventListener(emit, event) }
         }, { id: 'Vue3ChartJsEventHookPlugin' })
 
-    const state = {
+    const chartJSState = {
       chart: null,
-      debouncedID: null,
       plugins: [
         chartJsEventsPlugin,
         ...props.plugins
@@ -50,31 +49,31 @@ const Vue3ChartJs = defineComponent({
     }
 
     const destroy = () => {
-      if (state.chart) {
-        state.chart.destroy()
-        state.chart = null
+      if (chartJSState.chart) {
+        chartJSState.chart.destroy()
+        chartJSState.chart = null
       }
     }
 
     const update = () => {
       //merge component props into chart.js store
-      state.props = { ...state.props, ...props }
-      state.chart.update()
+      chartJSState.props = { ...chartJSState.props, ...props }
+      chartJSState.chart.update()
     }
 
-    const resize = () =>  state.chart && state.chart.resize()
+    const resize = () =>  chartJSState.chart && chartJSState.chart.resize()
 
     const render = () => {
-      if (state.chart) {
-        return state.chart.update()
+      if (chartJSState.chart) {
+        return chartJSState.chart.update()
       }
 
-      return state.chart = new Chart(
+      return chartJSState.chart = new Chart(
           chartRef.value.getContext('2d'), {
-            type: state.props.type,
-            data: state.props.data,
-            options: state.props.options,
-            plugins: state.plugins
+            type: chartJSState.props.type,
+            data: chartJSState.props.data,
+            options: chartJSState.props.options,
+            plugins: chartJSState.plugins
           }
       )
     }
@@ -82,7 +81,7 @@ const Vue3ChartJs = defineComponent({
     onMounted(() => render())
 
     return {
-      state: readonly(state),
+      chartJSState,
       chartRef,
       render,
       resize,

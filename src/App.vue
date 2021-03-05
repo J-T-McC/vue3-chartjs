@@ -13,6 +13,7 @@
     ></vue3-chart-js>
 
     <button type="submit" @click="updateChart">Update Doughnut Data</button>
+    <button type="submit" @click="exportChart">Export Chart as PNG</button>
 
   </div>
 </template>
@@ -65,10 +66,19 @@ export default {
       chartRef.value.update()
     }
 
+    const exportChart = () => {
+      let a = document.createElement('a')
+      a.href = chartRef.value.chartJSState.chart.toBase64Image()
+      a.download = 'image-export.png'
+      a.click()
+      a = null
+    }
+
     return {
       barChart,
       localDoughnutChartOptions,
       updateChart,
+      exportChart,
       beforeInit,
       beforeUpdate,
       chartRef

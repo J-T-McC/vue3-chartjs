@@ -6,6 +6,11 @@
 
 Basic [ChartJS](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
+## Requirements
+
+- Vue3
+- ChartJS 2.9
+
 ## Installation
 
 ```shell script
@@ -16,7 +21,9 @@ npm install @j-t-mcc/vue3-chartjs
 
 ## Configuration
 
-Arguments are passed as-is to the instance of ChartJS. View [Examples](https://www.chartjs.org/docs/latest/getting-started/usage.html).
+Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS. 
+You are able to use direct examples from their documentation. View the [ChartJS Docs](https://www.chartjs.org/docs/latest/getting-started/usage.html) for
+more examples.
 
 ```js
   props: {
@@ -45,16 +52,39 @@ Arguments are passed as-is to the instance of ChartJS. View [Examples](https://w
 
 ## Events
 
-A default event hook plugin is injected into each chart object and emits the following: [ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.html#plugin-core-api)
+A default event hook plugin is injected into each chart object and emits the following events: 
+[ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.html#plugin-core-api)
 
-Event listeners are converted to camelcase in Vue3. Events marked as "cancellable" can be "canceled" by the calling preventDefault method on the event parameter.
+Event listeners are converted to camelcase in Vue3. Events marked as "cancellable" in the ChartJS documentation 
+can be "canceled" by calling the preventDefault method on the event parameter available in your event function.
+
+## Methods
+
+This library only implements a few ChartJS methods for some common interactions and are available by reference:
+
+```javascript
+chartRef.value.update()
+chartRef.value.resize()
+chartRef.value.destroy()
+```
+
+If you require additional access to ChartJS functionality, you can interact directly with the ChartJS object via the chartJSState 
+attribute by reference:
+
+```javascript
+const base64Image = chartRef.value.chartJSState.chart.toBase64Image()
+```
+
+See the [ChartJS Docs](https://www.chartjs.org/docs/latest/developers/api.html) for more 
 
 ## Examples
 
-### Basic Chart
+Below are some basic chart examples to get started. 
+
+### Simple Chart
 ```vue
 <template>
-  <div style="height:600px;width: 600px;">
+  <div style="height:600px;width: 600px; display: flex;flex-direction:column;">
     <vue3-chart-js
         :id="doughnutChart.id"
         :type="doughnutChart.type"
@@ -111,7 +141,9 @@ export default {
 
 ### Updating chart
 
-[Updating Charts](https://www.chartjs.org/docs/latest/developers/updates.html)
+Here is an example of updating the data and labels in a chart.
+
+See the [ChartJS docs](https://www.chartjs.org/docs/latest/developers/updates.html) for more details on updating charts.
 
 ```vue
 <template>
@@ -184,6 +216,77 @@ export default {
 }
 </script>
 
+```
+
+### Exporting Chart as PNG
+
+```vue
+<template>
+  <div style="height:600px;width: 600px; display: flex;flex-direction:column;">
+    <button type="submit" @click="exportChart">Export Chart as PNG</button>
+    <vue3-chart-js
+        :id="doughnutChart.id"
+        ref="chartRef"
+        :type="doughnutChart.type"
+        :data="doughnutChart.data"
+    ></vue3-chart-js>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue'
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+
+export default {
+  name: 'App',
+  components: {
+    Vue3ChartJs,
+  },
+  setup () {
+    const chartRef = ref(null)
+    const doughnutChart = {
+      id: 'doughnut',
+      type: 'doughnut',
+      data: {
+        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+        datasets: [
+          {
+            backgroundColor: [
+              '#41B883',
+              '#E46651',
+              '#00D8FF',
+              '#DD1B16'
+            ],
+            data: [40, 20, 80, 10]
+          }
+        ]
+      }
+    }
+
+    const exportChart = () => {
+      let a = document.createElement('a')
+      a.href = chartRef.value.chartJSState.chart.toBase64Image()
+      a.download = 'image-export.png'
+      a.click()
+      a = null
+    }
+
+    return {
+      chartRef,
+      doughnutChart,
+      exportChart
+    }
+  },
+}
+</script>
+```
+
+## Demo
+
+For a demo Clone this repository and run
+
+```shell script
+yarn install
 
 ```
 

@@ -21,24 +21,11 @@ describe('init', () => {
     expect(App._context.components.hasOwnProperty(Vue3ChartJs.name)).toBeTruthy()
   })
 
-  it('renders', () => {
+  it('ChartJS instance is accessible', () => {
     const wrapper = factory(doughnutProps)
-    expect(wrapper.vm.state.chart).toBeTruthy()
+    expect(wrapper.vm.chartJSState.chart).toBeTruthy()
   })
 
-  it('returns readonly state', () => {
-    const wrapper = factory(doughnutProps)
-    const warn = jest.spyOn(global.console, 'warn');
-
-    //attempt to set state attribute
-    wrapper.vm.state.chart = null
-
-    //confirm vue logged the warning
-    expect(warn).toHaveBeenCalled();
-
-    warn.mockReset();
-    warn.mockRestore();
-  })
 })
 
 describe('chart reloading', () => {
@@ -60,7 +47,7 @@ describe('component methods', () => {
 
   it('destroys if chart exists', () => {
     const wrapper = factory(doughnutProps)
-    expect(wrapper.vm.state.chart).toBeTruthy()
+    expect(wrapper.vm.chartJSState.chart).toBeTruthy()
     wrapper.vm.destroy()
     expect(wrapper.emitted('destroy').length).toEqual(1)
 

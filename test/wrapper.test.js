@@ -1,16 +1,18 @@
-import { expect, it, describe, jest } from '@jest/globals'
+import { expect, it, describe } from '@jest/globals'
 import { mount } from '@vue/test-utils'
 import Vue3ChartJs from '../lib/main'
 
-import { createApp, readonly } from 'vue'
+import { createApp } from 'vue'
 
 import { doughnutProps } from './chart.props'
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from '../lib/includes'
 
 const factory = function (props) {
-  return mount(Vue3ChartJs, {
+  const wrapper = mount(Vue3ChartJs, {
     propsData: { ...props }
   })
+  wrapper.vm.render()
+  return wrapper
 }
 
 describe('init', () => {
@@ -32,13 +34,12 @@ describe('chart reloading', () => {
 
   it('reloads if already exists', async () => {
     const wrapper = factory(doughnutProps)
-    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setTimeout(resolve, 500))
     expect(wrapper.emitted('afterInit').length).toEqual(1)
-    expect(wrapper.emitted('afterUpdate').length).toEqual(1)
-    wrapper.vm.render()
-    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setTimeout(resolve, 500))
     expect(wrapper.emitted('afterUpdate').length).toEqual(2)
     expect(wrapper.emitted('afterInit').length).toEqual(1)
+
   })
 
 })

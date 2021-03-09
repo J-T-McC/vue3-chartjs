@@ -1,7 +1,9 @@
 <script>
 import { h, ref, onMounted, defineComponent } from 'vue'
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes'
-import Chart from 'chart.js'
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 const Vue3ChartJs = defineComponent({
   name: 'Vue3ChartJs',
@@ -61,7 +63,7 @@ const Vue3ChartJs = defineComponent({
       chartJSState.chart.update()
     }
 
-    const resize = () =>  chartJSState.chart && chartJSState.chart.resize()
+    const resize = () => chartJSState.chart && chartJSState.chart.resize()
 
     const render = () => {
       if (chartJSState.chart) {

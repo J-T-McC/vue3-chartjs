@@ -283,11 +283,12 @@ export default {
 
 ## Demo
 
-For a demo Clone this repository and run
+For a demo, Clone this repository and run:
 
 ```shell script
 yarn install
 
+yarn dev
 ```
 
 ## License

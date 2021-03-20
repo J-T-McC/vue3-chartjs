@@ -10,6 +10,7 @@
         v-bind="{...localDoughnutChartOptions}"
         @before-init="beforeInit"
         @before-update="beforeUpdate"
+        @after-update="afterUpdate"
     ></vue3-chart-js>
 
     <button type="submit" @click="updateChart">Update Doughnut Data</button>
@@ -40,12 +41,23 @@ export default {
       console.log('beforeUpdate', e)
     }
 
-    let localDoughnutChartOptions = { ...doughnutChart }
+    const afterUpdate = (e) => {
+      console.log('afterUpdate', e)
+    }
 
     const chartRef = ref(null)
 
-    const updateChart = () => {
+    const localDoughnutChartOptions = { ...doughnutChart }
 
+    let counter = 1
+
+    const updateChart = () => {
+      localDoughnutChartOptions.options.title = {
+        display: true,
+        text: 'Loaded: ' + (counter++)
+      }
+
+      localDoughnutChartOptions.data.labels.reverse()
       localDoughnutChartOptions.data.datasets = [
         {
           backgroundColor: [
@@ -63,7 +75,7 @@ export default {
         }
       ]
 
-      chartRef.value.update()
+      chartRef.value.update(750)
     }
 
     const exportChart = () => {
@@ -81,6 +93,7 @@ export default {
       exportChart,
       beforeInit,
       beforeUpdate,
+      afterUpdate,
       chartRef
     }
   },

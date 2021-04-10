@@ -52,6 +52,9 @@ const doughnutChart = {
         data: [40, 20, 80, 10]
       }
     ]
+  },
+  options: {
+
   }
 }
 

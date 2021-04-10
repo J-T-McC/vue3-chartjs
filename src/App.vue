@@ -46,16 +46,23 @@ export default {
       console.log('beforeUpdate', e)
     }
 
-    let localDoughnutChartOptions = { ...doughnutChart }
-
-    const chartRef = ref(null)
-
     const afterUpdate = (e) => {
       console.log('afterUpdate', e)
     }
 
-    const updateChart = () => {
+    const chartRef = ref(null)
 
+    const localDoughnutChartOptions = { ...doughnutChart }
+
+    let counter = 1
+
+    const updateChart = () => {
+      localDoughnutChartOptions.options.title = {
+        display: true,
+        text: 'Loaded: ' + (counter++)
+      }
+
+      localDoughnutChartOptions.data.labels.reverse()
       localDoughnutChartOptions.data.datasets = [
         {
           backgroundColor: [
@@ -73,7 +80,7 @@ export default {
         }
       ]
 
-      chartRef.value.update()
+      chartRef.value.update(750)
     }
 
     const exportChart = () => {

@@ -18,15 +18,11 @@ const Vue3ChartJs = defineComponent({
     },
     options: {
       type: Object,
-      default () {
-        return {}
-      },
+      default: () => ({})
     },
     plugins: {
       type: Array,
-      default () {
-        return []
-      }
+      default: () => []
     }
   },
   emits: chartJsEventNames,
@@ -46,8 +42,7 @@ const Vue3ChartJs = defineComponent({
         chartJsEventsPlugin,
         ...props.plugins
       ],
-      //clone props for chart use due to chart.js mutations
-      props: { ...props }
+      props: {...props}
     }
 
     const destroy = () => {
@@ -57,10 +52,10 @@ const Vue3ChartJs = defineComponent({
       }
     }
 
-    const update = () => {
-      //merge component props into chart.js store
-      chartJSState.props = { ...chartJSState.props, ...props }
-      chartJSState.chart.update()
+    const update = (animateSpeed = 750) => {
+      chartJSState.chart.data = { ...chartJSState.chart.data, ...chartJSState.props.data }
+      chartJSState.chart.options = { ...chartJSState.chart.options, ...chartJSState.props.options }
+      chartJSState.chart.update(animateSpeed)
     }
 
     const resize = () => chartJSState.chart && chartJSState.chart.resize()

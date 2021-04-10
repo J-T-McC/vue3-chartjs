@@ -27,27 +27,23 @@ more examples.
 
 ```js
   props: {
-     type: {
-       type: String,
-       required: true
-     },
-     data: {
-       type: Object,
-       required: true
-     },
-     options: {
-       type: Object,
-       default () {
-         return {}
-       },
-     },
-     plugins: {
-       type: Array,
-       default () {
-         return []
-       }
-     }
-   }
+    type: {
+      type: String,
+      required: true
+    },
+    data: {
+      type: Object,
+      required: true
+    },
+    options: {
+      type: Object,
+      default: () => ({})
+    },
+    plugins: {
+      type: Array,
+      default: () => []
+    }
+  }
 ```
 
 ## Events
@@ -63,7 +59,7 @@ can be "canceled" by calling the preventDefault method on the event parameter av
 This library only implements a few ChartJS methods for some common interactions and are available by reference:
 
 ```javascript
-chartRef.value.update()
+chartRef.value.update(animationSpeed = 750)
 chartRef.value.resize()
 chartRef.value.destroy()
 ```
@@ -141,7 +137,7 @@ export default {
 
 ### Updating chart
 
-Here is an example of updating the data and labels in a chart.
+Here is an example of updating the data, labels and title in a chart.
 
 See the [ChartJS docs](https://www.chartjs.org/docs/latest/developers/updates.html) for more details on updating charts.
 
@@ -153,6 +149,7 @@ See the [ChartJS docs](https://www.chartjs.org/docs/latest/developers/updates.ht
         ref="chartRef"
         :type="doughnutChart.type"
         :data="doughnutChart.data"
+        :options="doughnutChart.options"
     ></vue3-chart-js>
 
     <button @click="updateChart">Update Chart</button>
@@ -187,10 +184,15 @@ export default {
             data: [40, 20, 80, 10]
           }
         ]
-      }
+      },
+      options: {}
     }
 
     const updateChart = () => {
+      doughnutChart.options.title = {
+          text: 'Updated Chart',
+          display: true  
+      }   
       doughnutChart.data.labels = ['Cats', 'Dogs', 'Hamsters', 'Dragons']
       doughnutChart.data.datasets = [
         {
@@ -204,7 +206,7 @@ export default {
         }
       ]
 
-      chartRef.value.update()
+      chartRef.value.update(250)
     }
 
     return {
@@ -283,11 +285,12 @@ export default {
 
 ## Demo
 
-For a demo Clone this repository and run
+For a demo, Clone this repository and run:
 
 ```shell script
 yarn install
 
+yarn dev
 ```
 
 ## License

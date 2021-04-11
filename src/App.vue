@@ -1,22 +1,22 @@
 <template>
   <div style="height:600px;width: 600px;">
 
-    <div style="width: 300px">
+    <div style="width: 500px">
       <vue3-chart-js
           v-bind="{...barChart}"
           @before-init="beforeInit"
           @before-update="beforeUpdate"
           @after-update="afterUpdate"
-      ></vue3-chart-js>
+      />
     </div>
-    <div style="width: 300px">
+    <div style="width: 500px">
       <vue3-chart-js
           ref="chartRef"
           v-bind="{...localDoughnutChartOptions}"
           @before-init="beforeInit"
           @before-update="beforeUpdate"
           @after-update="afterUpdate"
-      ></vue3-chart-js>
+      />
     </div>
     <button type="submit" @click="updateChart">Update Doughnut Data</button>
     <button type="submit" @click="exportChart">Export Chart as PNG</button>
@@ -48,6 +48,10 @@ export default {
 
     const afterUpdate = (e) => {
       console.log('afterUpdate', e)
+    }
+
+    const testFunc = () => {
+      console.log('test func called')
     }
 
     const chartRef = ref(null)
@@ -85,7 +89,7 @@ export default {
 
     const exportChart = () => {
       let a = document.createElement('a')
-      a.href = chartRef.value.chartJSState.chart.toBase64Image()
+      a.href = chartRef.value.chartJSState.chart.toBase64Image('image/png', 1)
       a.download = 'image-export.png'
       a.click()
       a = null
@@ -99,6 +103,7 @@ export default {
       beforeInit,
       beforeUpdate,
       afterUpdate,
+      testFunc,
       chartRef
     }
   },

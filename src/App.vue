@@ -61,7 +61,7 @@ export default {
     let counter = 1
 
     const updateChart = () => {
-      localDoughnutChartOptions.options.title = {
+      localDoughnutChartOptions.options.plugins.title = {
         display: true,
         text: 'Loaded: ' + (counter++)
       }

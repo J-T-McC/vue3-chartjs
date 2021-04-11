@@ -24,7 +24,7 @@ npm install @j-t-mcc/vue3-chartjs
 ## Configuration
 
 Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS. 
-You are able to use direct examples from their documentation. View the [ChartJS Docs](https://www.chartjs.org/docs/2.9.4/getting-started/usage.html) for
+You are able to use direct examples from their documentation. View the [ChartJS Docs](https://www.chartjs.org/docs/latest/getting-started/usage.html) for
 more examples.
 
 ```js
@@ -51,7 +51,7 @@ more examples.
 ## Events
 
 A default event hook plugin is injected into each chart object and emits the following events: 
-[ChartJS events](https://www.chartjs.org/docs/2.9.4/developers/plugins.html#plugin-core-api)
+[ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.html#plugin-core-api)
 
 Event listeners are converted to camelcase in Vue3. Events marked as "cancellable" in the ChartJS documentation 
 can be "canceled" by calling the preventDefault method on the event parameter available in your event function.
@@ -73,7 +73,7 @@ attribute by reference:
 const base64Image = chartRef.value.chartJSState.chart.toBase64Image()
 ```
 
-See the [ChartJS Docs](https://www.chartjs.org/docs/2.9.4/developers/api.html) for more 
+See the [ChartJS Docs](https://www.chartjs.org/docs/latest/developers/api.html) for more 
 
 ## Examples
 
@@ -141,7 +141,7 @@ export default {
 
 Here is an example of updating the data, labels and title in a chart.
 
-See the [ChartJS docs](https://www.chartjs.org/docs/2.9.4/developers/updates.html) for more details on updating charts.
+See the [ChartJS docs](https://www.chartjs.org/docs/latest/developers/updates.html) for more details on updating charts.
 
 ```vue
 <template>

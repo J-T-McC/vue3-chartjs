@@ -6,7 +6,7 @@
 
 Basic [ChartJS 3](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
-For ChartJS 2.9.4 see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/releases/tag/v0.3.0)
+For ChartJS 2.9.4 see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
 
 ## Requirements
 
@@ -187,11 +187,13 @@ export default {
           }
         ]
       },
-      options: {}
+      options: {
+        plugins: {}
+      }
     }
 
     const updateChart = () => {
-      doughnutChart.options.title = {
+      doughnutChart.options.plugins.title = {
           text: 'Updated Chart',
           display: true  
       }   

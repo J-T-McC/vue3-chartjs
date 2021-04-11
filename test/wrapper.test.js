@@ -83,14 +83,14 @@ describe('component methods', () => {
     const wrapper = factory(doughnutProps)
     const chart = wrapper.vm.chartJSState.chart
     expect(wrapper.emitted('afterInit')).toHaveLength(1)
-    expect(chart.options.title).toBeFalsy()
-    doughnutProps.options.title = {
+    expect(chart.options.plugins.title.display).toBeFalsy()
+    doughnutProps.options.plugins.title = {
       text: 'Updated',
       display: true
     }
     wrapper.vm.update()
     expect(wrapper.emitted('afterUpdate').length).toEqual(1)
-    expect(chart.options.title.text).toEqual('Updated')
+    expect(chart.options.plugins.title.text).toEqual('Updated')
   })
 
   it('implements prevent default for emitted chart.js hooks', () => {

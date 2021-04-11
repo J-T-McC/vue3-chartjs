@@ -4,12 +4,14 @@
 [![Build Status](https://travis-ci.org/J-T-McC/vue3-chartjs.svg?branch=main)](https://travis-ci.org/J-T-McC/vue3-chartjs)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
 
-Basic [ChartJS](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
+Basic [ChartJS 3](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
+
+For ChartJS 2.9.4 see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
 
 ## Requirements
 
 - Vue3
-- ChartJS 2.9
+- ChartJS 3.1
 
 ## Installation
 
@@ -185,11 +187,13 @@ export default {
           }
         ]
       },
-      options: {}
+      options: {
+        plugins: {}
+      }
     }
 
     const updateChart = () => {
-      doughnutChart.options.title = {
+      doughnutChart.options.plugins.title = {
           text: 'Updated Chart',
           display: true  
       }   

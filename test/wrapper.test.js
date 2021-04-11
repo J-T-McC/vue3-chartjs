@@ -1,4 +1,4 @@
-import { expect, it, describe, jest } from '@jest/globals'
+import { expect, it, describe } from '@jest/globals'
 import { mount } from '@vue/test-utils'
 import Vue3ChartJs from '../lib/main'
 
@@ -45,38 +45,36 @@ describe('chart reloading', () => {
 
   it('reloads if already exists', async () => {
     const wrapper = factory(getDoughnutProps())
-    await wrapper.vm.$nextTick()
-    expect(wrapper.emitted('afterInit').length).toEqual(1)
-    expect(wrapper.emitted('afterUpdate').length).toEqual(1)
     wrapper.vm.render()
-    await wrapper.vm.$nextTick()
-    expect(wrapper.emitted('afterUpdate').length).toEqual(2)
-    expect(wrapper.emitted('afterInit').length).toEqual(1)
+    expect(wrapper.emitted('afterInit')).toHaveLength(1)
+    wrapper.vm.render()
+    expect(wrapper.emitted('afterUpdate')).toHaveLength(2)
+    expect(wrapper.emitted('afterInit')).toHaveLength(1)
   })
 
 })
 
 describe('component methods', () => {
 
-  it('destroys if chart exists', () => {
+  it('destroys if chart exists', async () => {
     const wrapper = factory(getDoughnutProps())
     expect(wrapper.vm.chartJSState.chart).toBeTruthy()
     wrapper.vm.destroy()
-    expect(wrapper.emitted('destroy').length).toEqual(1)
-
+    expect(wrapper.vm.chartJSState.chart).toBeFalsy()
+    expect(wrapper.emitted('destroy')).toHaveLength(1)
     wrapper.vm.destroy()
-    expect(wrapper.emitted('destroy').length).toEqual(1)
+    expect(wrapper.emitted('destroy')).toHaveLength(1)
   })
 
-  it('updates data', () => {
+  it('updates data', async () => {
     const doughnutProps = getDoughnutProps();
     const wrapper = factory(doughnutProps)
     const chart = wrapper.vm.chartJSState.chart
-    expect(wrapper.emitted('afterUpdate').length).toEqual(1)
+    expect(wrapper.emitted('afterInit')).toHaveLength(1)
     expect(chart.data.datasets[0].data).toEqual(doughnutProps.data.datasets[0].data)
     doughnutProps.data.datasets[0].data = [1, 2, 3, 4]
     wrapper.vm.update()
-    expect(wrapper.emitted('afterUpdate').length).toEqual(2)
+    expect(wrapper.emitted('afterUpdate')).toHaveLength(1)
     expect(chart.data.datasets[0].data).toEqual(doughnutProps.data.datasets[0].data)
   })
 
@@ -84,16 +82,15 @@ describe('component methods', () => {
     const doughnutProps = getDoughnutProps();
     const wrapper = factory(doughnutProps)
     const chart = wrapper.vm.chartJSState.chart
-    expect(wrapper.emitted('afterUpdate').length).toEqual(1)
-    expect(chart.options.title.display).toBeFalsy()
-    expect(chart.options.title.text).toBeFalsy()
-    doughnutProps.options.title = {
+    expect(wrapper.emitted('afterInit')).toHaveLength(1)
+    expect(chart.options.plugins.title.display).toBeFalsy()
+    doughnutProps.options.plugins.title = {
       text: 'Updated',
       display: true
     }
     wrapper.vm.update()
-    expect(wrapper.emitted('afterUpdate').length).toEqual(2)
-    expect(chart.options.title.text).toEqual('Updated')
+    expect(wrapper.emitted('afterUpdate').length).toEqual(1)
+    expect(chart.options.plugins.title.text).toEqual('Updated')
   })
 
   it('implements prevent default for emitted chart.js hooks', () => {
@@ -116,41 +113,52 @@ describe('component methods', () => {
     eventPrevented.preventDefault()
     const pluginEventPrevented = generateChartJsEventListener(mockEmit, eventPrevented)
     expect(pluginEventPrevented['test']()).toBeFalsy()
-
     expect(invoked).toEqual(2)
-
   })
 })
 
 describe('emitted events', () => {
   const wrapper = factory(getDoughnutProps())
-
+  wrapper.vm.render();
   const skipEvents = [
     'resize',
-    'beforeEvent',
-    'afterEvent',
+    'reset',
+    'stop',
+    'beforeRender',
+    'afterRender',
+    'afterTooltipDraw',
+    'beforeTooltipDraw',
+    'uninstall',
     'destroy',
   ]
 
   chartJsEventNames
     .filter((eventName) => !skipEvents.includes(eventName))
     .forEach((eventName, index) => {
-      it(`emits ${eventName} events`, async () => {
-        if (!index) {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-        }
-        expect(wrapper.emitted(eventName).length).toBeTruthy()
+      it(`emits ${eventName} events`, () => {
+        expect(wrapper.emitted(eventName)).toBeTruthy()
       })
     })
 
   it('emits resize event', () => {
     wrapper.vm.resize()
-    expect(wrapper.emitted('resize').length).toBeTruthy()
+    expect(wrapper.emitted('resize')).toHaveLength(1)
   })
 
-  it('emits destroy event', () => {
+  it('emits reset event', () => {
+    wrapper.vm.chartJSState.chart.reset()
+    expect(wrapper.emitted('reset')).toBeTruthy()
+  })
+
+  it('emits destroy, uninstall, stop events', () => {
     wrapper.vm.destroy()
-    expect(wrapper.emitted('destroy').length).toBeTruthy()
+    expect(wrapper.emitted('destroy')).toHaveLength(1)
+    expect(wrapper.emitted('uninstall')).toHaveLength(1)
+    expect(wrapper.emitted('stop')).toHaveLength(1)
   })
 
+  it('emits render events', () => {
+    expect(wrapper.emitted('beforeRender')).toBeTruthy()
+    expect(wrapper.emitted('afterRender')).toBeTruthy()
+  })
 })

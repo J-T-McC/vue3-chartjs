@@ -1,18 +1,23 @@
 <template>
   <div style="height:600px;width: 600px;">
-    <vue3-chart-js
-        v-bind="{...barChart}"
-        @before-init="beforeInit"
-    ></vue3-chart-js>
 
-    <vue3-chart-js
-        ref="chartRef"
-        v-bind="{...localDoughnutChartOptions}"
-        @before-init="beforeInit"
-        @before-update="beforeUpdate"
-        @after-update="afterUpdate"
-    ></vue3-chart-js>
-
+    <div style="width: 500px">
+      <vue3-chart-js
+          v-bind="{...barChart}"
+          @before-init="beforeInit"
+          @before-update="beforeUpdate"
+          @after-update="afterUpdate"
+      />
+    </div>
+    <div style="width: 500px">
+      <vue3-chart-js
+          ref="chartRef"
+          v-bind="{...localDoughnutChartOptions}"
+          @before-init="beforeInit"
+          @before-update="beforeUpdate"
+          @after-update="afterUpdate"
+      />
+    </div>
     <button type="submit" @click="updateChart">Update Doughnut Data</button>
     <button type="submit" @click="exportChart">Export Chart as PNG</button>
 
@@ -45,6 +50,10 @@ export default {
       console.log('afterUpdate', e)
     }
 
+    const testFunc = () => {
+      console.log('test func called')
+    }
+
     const chartRef = ref(null)
 
     const localDoughnutChartOptions = { ...doughnutChart }
@@ -52,7 +61,7 @@ export default {
     let counter = 1
 
     const updateChart = () => {
-      localDoughnutChartOptions.options.title = {
+      localDoughnutChartOptions.options.plugins.title = {
         display: true,
         text: 'Loaded: ' + (counter++)
       }
@@ -80,7 +89,7 @@ export default {
 
     const exportChart = () => {
       let a = document.createElement('a')
-      a.href = chartRef.value.chartJSState.chart.toBase64Image()
+      a.href = chartRef.value.chartJSState.chart.toBase64Image('image/png', 1)
       a.download = 'image-export.png'
       a.click()
       a = null
@@ -94,6 +103,7 @@ export default {
       beforeInit,
       beforeUpdate,
       afterUpdate,
+      testFunc,
       chartRef
     }
   },

@@ -14,9 +14,9 @@ Basic [ChartJS](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.or
 ## Installation
 
 ```shell script
-yarn add @j-t-mcc/vue3-chartjs
+yarn add @j-t-mcc/vue3-chartjs@0.3.0
 
-npm install @j-t-mcc/vue3-chartjs
+npm install @j-t-mcc/vue3-chartjs@0.3.0
 ```
 
 ## Configuration

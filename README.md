@@ -6,12 +6,12 @@
 
 Basic [ChartJS 3](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
-For ChartJS 2.9.4 see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
+For ChartJS 2, see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
 
 ## Requirements
 
 - Vue3
-- ChartJS 3.1
+- ChartJS 3
 
 ## Installation
 

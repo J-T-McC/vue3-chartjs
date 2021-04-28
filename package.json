@@ -43,7 +43,7 @@
     "@vue/compiler-sfc": "^3.0.5",
     "@vue/test-utils": "2.0.0-rc.0",
     "babel-jest": "^26.6.3",
-    "chart.js": "^3.1.0",
+    "chart.js": "^3.2.0",
     "coveralls": "^3.1.0",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^8.1.0",

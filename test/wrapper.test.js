@@ -1,6 +1,7 @@
 import { expect, it, describe } from '@jest/globals'
 import { mount } from '@vue/test-utils'
 import Vue3ChartJs from '../lib/main'
+import { Chart } from 'chart.js'
 
 import { createApp } from 'vue'
 
@@ -19,6 +20,14 @@ describe('init', () => {
     const App = createApp({})
     App.use(Vue3ChartJs)
     expect(App._context.components.hasOwnProperty(Vue3ChartJs.name)).toBeTruthy()
+  })
+
+  it('registers global plugins', () => {
+    const App = createApp({})
+    App.use(Vue3ChartJs, {
+      plugins: [{ id: 'globallyImportedTestPlugin' }]
+    })
+    expect(Chart.defaults.plugins['globallyImportedTestPlugin']).toBeTruthy()
   })
 
   it('ChartJS instance is accessible', () => {
@@ -42,7 +51,6 @@ describe('init', () => {
 })
 
 describe('chart reloading', () => {
-
   it('reloads if already exists', async () => {
     const wrapper = factory(getDoughnutProps())
     wrapper.vm.render()
@@ -51,11 +59,9 @@ describe('chart reloading', () => {
     expect(wrapper.emitted('afterUpdate')).toHaveLength(2)
     expect(wrapper.emitted('afterInit')).toHaveLength(1)
   })
-
 })
 
 describe('component methods', () => {
-
   it('destroys if chart exists', async () => {
     const wrapper = factory(getDoughnutProps())
     expect(wrapper.vm.chartJSState.chart).toBeTruthy()
@@ -67,7 +73,7 @@ describe('component methods', () => {
   })
 
   it('updates data', async () => {
-    const doughnutProps = getDoughnutProps();
+    const doughnutProps = getDoughnutProps()
     const wrapper = factory(doughnutProps)
     const chart = wrapper.vm.chartJSState.chart
     expect(wrapper.emitted('afterInit')).toHaveLength(1)
@@ -79,7 +85,7 @@ describe('component methods', () => {
   })
 
   it('updates options', () => {
-    const doughnutProps = getDoughnutProps();
+    const doughnutProps = getDoughnutProps()
     const wrapper = factory(doughnutProps)
     const chart = wrapper.vm.chartJSState.chart
     expect(wrapper.emitted('afterInit')).toHaveLength(1)
@@ -119,7 +125,7 @@ describe('component methods', () => {
 
 describe('emitted events', () => {
   const wrapper = factory(getDoughnutProps())
-  wrapper.vm.render();
+  wrapper.vm.render()
   const skipEvents = [
     'resize',
     'reset',

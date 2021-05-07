@@ -26,7 +26,7 @@ import {
   Legend,
   Title,
   Tooltip
-} from 'chart.js';
+} from 'chart.js'
 
 Chart.register(
     ArcElement,
@@ -52,7 +52,7 @@ Chart.register(
     Legend,
     Title,
     Tooltip
-);
+)
 
 const Vue3ChartJs = defineComponent({
   name: 'Vue3ChartJs',
@@ -91,7 +91,7 @@ const Vue3ChartJs = defineComponent({
         chartJsEventsPlugin,
         ...props.plugins
       ],
-      props: {...props}
+      props: { ...props }
     }
 
     const destroy = () => {

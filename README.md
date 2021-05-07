@@ -10,7 +10,7 @@ For ChartJS 2, see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
 
 ## Requirements
 
-- Vue3
+- Vue 3
 - ChartJS 3
 
 ## Installation
@@ -23,9 +23,9 @@ npm install @j-t-mcc/vue3-chartjs
 
 ## Configuration
 
-Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS.
-You are able to use direct examples from their documentation. View the [ChartJS Docs](https://www.chartjs.org/docs/latest/getting-started/usage.html) for
-more examples.
+Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS. You are
+able to use direct examples from their documentation. View
+the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html) for more examples.
 
 ```js
   props: {
@@ -53,8 +53,8 @@ more examples.
 A default event hook plugin is injected into each chart object and emits the following events:
 [ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.html#plugin-core-api)
 
-Event listeners are converted to camelcase in Vue3. Events marked as "cancellable" in the ChartJS documentation
-can be "canceled" by calling the preventDefault method on the event parameter available in your event function.
+Event listeners are converted to camelcase in Vue 3. Events marked as "cancellable" in the ChartJS documentation can be "
+canceled" by calling the preventDefault method on the event parameter available in your event function.
 
 ## Methods
 
@@ -66,8 +66,8 @@ chartRef.value.resize()
 chartRef.value.destroy()
 ```
 
-If you require additional access to ChartJS functionality, you can interact directly with the ChartJS object via the chartJSState
-attribute by reference:
+If you require additional access to ChartJS functionality, you can interact directly with the ChartJS object via the
+chartJSState attribute by reference:
 
 ```javascript
 const base64Image = chartRef.value.chartJSState.chart.toBase64Image()
@@ -80,6 +80,7 @@ See the [ChartJS Docs](https://www.chartjs.org/docs/latest/developers/api.html) 
 Below are some basic chart examples to get started.
 
 ### Simple Chart
+
 ```vue
 <template>
   <div style="height:600px;width: 600px; display: flex;flex-direction:column;">
@@ -134,7 +135,6 @@ export default {
   },
 }
 </script>
-
 ```
 
 ### Updating chart
@@ -194,8 +194,8 @@ export default {
 
     const updateChart = () => {
       doughnutChart.options.plugins.title = {
-          text: 'Updated Chart',
-          display: true
+        text: 'Updated Chart',
+        display: true
       }
       doughnutChart.data.labels = ['Cats', 'Dogs', 'Hamsters', 'Dragons']
       doughnutChart.data.datasets = [
@@ -289,7 +289,43 @@ export default {
 
 ### Adding a plugin
 
-Here is an example of adding a plugin, in this case [`chartjs-plugin-zoom`](https://github.com/chartjs/chartjs-plugin-zoom).
+ChartJS has two different types of plugins: Global & Inline.
+
+Inline plugins can be passed directly to the chart via the plugins array prop and will be available for that chart only.
+
+Global plugins require registration with ChartJS and will be available for all charts. Some plugins must be registered.
+
+Here is an example of adding a global plugin, in this case [`chartjs-plugin-zoom`](https://github.com/chartjs/chartjs-plugin-zoom).
+
+Global plugins can be registered one of two ways:
+
+#### Via Component Install
+
+```javascript
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+import zoomPlugin from 'chartjs-plugin-zoom'
+
+const Vue = createApp(App)
+
+Vue.use(Vue3ChartJs, {
+  plugins: [
+    zoomPlugin
+  ]
+})
+
+Vue.mount('#app')
+````
+
+#### Via Helper Function
+
+```javascript
+import Vue3ChartJs from '../lib/main'
+import zoomPlugin from 'chartjs-plugin-zoom'
+
+Vue3ChartJs.registerGlobalPlugins([zoomPlugin])
+```
+
+Example usage with locally imported chart component:
 
 ```vue
 <template>
@@ -304,14 +340,16 @@ Here is an example of adding a plugin, in this case [`chartjs-plugin-zoom`](http
 
 <script>
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
-import zoomPlugin from 'chartjs-plugin-zoom'    // <-- Import plugin
+import zoomPlugin from 'chartjs-plugin-zoom'
+
+Vue3ChartJs.registerGlobalPlugins([zoomPlugin])
 
 export default {
   name: 'App',
   components: {
     Vue3ChartJs,
   },
-  setup() {
+  setup () {
     const lineChart = {
       id: 'line',
       type: 'line',
@@ -339,7 +377,6 @@ export default {
           borderWidth: 1
         }]
       },
-      plugins:  [zoomPlugin],    // <-- Register plugin
       options: {
         scales: {
           yAxes: [{
@@ -349,7 +386,7 @@ export default {
           }]
         },
         plugins: {
-          zoom: {    // <-- Set plugin options
+          zoom: {
             pan: {
               enabled: true,
               mode: 'y'
@@ -369,7 +406,6 @@ export default {
   },
 }
 </script>
-
 ```
 
 ## Demo

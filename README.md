@@ -23,7 +23,7 @@ npm install @j-t-mcc/vue3-chartjs
 
 ## Configuration
 
-Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS. 
+Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS.
 You are able to use direct examples from their documentation. View the [ChartJS Docs](https://www.chartjs.org/docs/latest/getting-started/usage.html) for
 more examples.
 
@@ -50,10 +50,10 @@ more examples.
 
 ## Events
 
-A default event hook plugin is injected into each chart object and emits the following events: 
+A default event hook plugin is injected into each chart object and emits the following events:
 [ChartJS events](https://www.chartjs.org/docs/latest/developers/plugins.html#plugin-core-api)
 
-Event listeners are converted to camelcase in Vue3. Events marked as "cancellable" in the ChartJS documentation 
+Event listeners are converted to camelcase in Vue3. Events marked as "cancellable" in the ChartJS documentation
 can be "canceled" by calling the preventDefault method on the event parameter available in your event function.
 
 ## Methods
@@ -66,18 +66,18 @@ chartRef.value.resize()
 chartRef.value.destroy()
 ```
 
-If you require additional access to ChartJS functionality, you can interact directly with the ChartJS object via the chartJSState 
+If you require additional access to ChartJS functionality, you can interact directly with the ChartJS object via the chartJSState
 attribute by reference:
 
 ```javascript
 const base64Image = chartRef.value.chartJSState.chart.toBase64Image()
 ```
 
-See the [ChartJS Docs](https://www.chartjs.org/docs/latest/developers/api.html) for more 
+See the [ChartJS Docs](https://www.chartjs.org/docs/latest/developers/api.html) for more
 
 ## Examples
 
-Below are some basic chart examples to get started. 
+Below are some basic chart examples to get started.
 
 ### Simple Chart
 ```vue
@@ -119,13 +119,13 @@ export default {
         ]
       }
     }
-  
+
     const beforeRenderLogic = (event) => {
       //...
       //if(a === b) {
       //  event.preventDefault()
-      //}   
-    }    
+      //}
+    }
 
     return {
       doughnutChart,
@@ -195,8 +195,8 @@ export default {
     const updateChart = () => {
       doughnutChart.options.plugins.title = {
           text: 'Updated Chart',
-          display: true  
-      }   
+          display: true
+      }
       doughnutChart.data.labels = ['Cats', 'Dogs', 'Hamsters', 'Dragons']
       doughnutChart.data.datasets = [
         {
@@ -285,6 +285,91 @@ export default {
   },
 }
 </script>
+```
+
+### Adding a plugin
+
+Here is an example of adding a plugin, in this case [`chartjs-plugin-zoom`](https://github.com/chartjs/chartjs-plugin-zoom).
+
+```vue
+<template>
+  <div style="height:600px;width: 600px; display: flex;flex-direction:column;">
+    <vue3-chart-js
+        :id="lineChart.id"
+        :type="lineChart.type"
+        :data="lineChart.data"
+    ></vue3-chart-js>
+  </div>
+</template>
+
+<script>
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+import zoomPlugin from 'chartjs-plugin-zoom'    // <-- Import plugin
+
+export default {
+  name: 'App',
+  components: {
+    Vue3ChartJs,
+  },
+  setup() {
+    const lineChart = {
+      id: 'line',
+      type: 'line',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: '# of Votes',
+          data: [12, 19, 3, 5, 2, 3],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      plugins:  [zoomPlugin],    // <-- Register plugin
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        plugins: {
+          zoom: {    // <-- Set plugin options
+            pan: {
+              enabled: true,
+              mode: 'y'
+            },
+            zoom: {
+              enabled: true,
+              mode: 'y'
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      lineChart
+    }
+  },
+}
+</script>
+
 ```
 
 ## Demo

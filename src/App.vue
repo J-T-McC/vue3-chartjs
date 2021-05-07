@@ -2,21 +2,10 @@
   <div style="height:600px;width: 600px;">
 
     <div style="width: 500px">
-      <vue3-chart-js
-          v-bind="{...barChart}"
-          @before-init="beforeInit"
-          @before-update="beforeUpdate"
-          @after-update="afterUpdate"
-      />
+      <vue3-chart-js v-bind="{...barChart}"  @after-update="afterUpdate"/>
     </div>
     <div style="width: 500px">
-      <vue3-chart-js
-          ref="chartRef"
-          v-bind="{...localDoughnutChartOptions}"
-          @before-init="beforeInit"
-          @before-update="beforeUpdate"
-          @after-update="afterUpdate"
-      />
+      <vue3-chart-js ref="chartRef" v-bind="{...localDoughnutChartOptions}" @after-update="afterUpdate"/>
     </div>
     <button type="submit" @click="updateChart">Update Doughnut Data</button>
     <button type="submit" @click="exportChart">Export Chart as PNG</button>
@@ -29,14 +18,58 @@
 import { ref } from 'vue'
 import Vue3ChartJs from '../lib/main'
 
-import { barChart, doughnutChart } from './charts.js'
-
 export default {
   name: 'App',
   components: {
-    Vue3ChartJs,
+    Vue3ChartJs
   },
   setup () {
+    const barChart = {
+      type: 'line',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+          label: 'My First Dataset',
+          data: [65, 59, 80, 81, 56, 55, 40],
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        plugins: {
+          zoom: {
+            zoom: {
+              enabled: true,
+              mode: 'xy',
+            }
+          }
+        }
+      }
+    }
+
+    const doughnutChart = {
+      id: 'doughnut',
+      type: 'doughnut',
+      data: {
+        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+        datasets: [
+          {
+            backgroundColor: [
+              '#41B883',
+              '#E46651',
+              '#00D8FF',
+              '#DD1B16'
+            ],
+            data: [40, 20, 80, 10]
+          }
+        ]
+      },
+      options: {
+        cutout: '10%',
+        plugins: {}
+      }
+    }
 
     const beforeInit = (e) => {
       console.log('chart is before init', e)

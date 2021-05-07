@@ -38,7 +38,7 @@ const barChart = {
 
 const doughnutChart = {
   id: 'doughnut',
-  type: 'doughnut',
+  type: 'line',
   data: {
     labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
     datasets: [
@@ -54,7 +54,14 @@ const doughnutChart = {
     ]
   },
   options: {
-    plugins: {}
+    plugins: {
+      zoom: {
+        zoom: {
+          enabled: true,
+          mode: 'xy',
+        }
+      }
+    }
   }
 }
 

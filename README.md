@@ -16,16 +16,16 @@ For ChartJS 2, see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
 ## Installation
 
 ```shell script
+yarn add chart.js
 yarn add @j-t-mcc/vue3-chartjs
 
+npm install chart.js
 npm install @j-t-mcc/vue3-chartjs
 ```
 
 ## Configuration
 
-Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS. You are
-able to use direct examples from their documentation. View
-the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html) for more examples.
+Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS.
 
 ```js
   props: {
@@ -47,6 +47,17 @@ the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html
     }
   }
 ```
+
+## Sandbox Examples
+
+* [Pie Chart](https://codesandbox.io/s/pie-chart-848by?file=/src/App.vue)
+* [Doughnut Chart](https://codesandbox.io/s/doughnut-chart-g7il4?file=/src/App.vue)
+* [Bar Chart](https://codesandbox.io/s/bar-chart-kog87?file=/src/App.vue)
+* [Radar Chart](https://codesandbox.io/s/radar-chart-j2dyp?file=/src/App.vue)
+* [Line Chart with Plugins](https://codesandbox.io/s/plugin-example-o4y3q?file=/src/App.vue)
+* [Events & Exports](https://codesandbox.io/s/events-and-exports-q5g9k?file=/src/App.vue)
+
+View the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html) for more examples.
 
 ## Events
 

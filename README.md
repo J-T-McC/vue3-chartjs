@@ -16,11 +16,9 @@ For ChartJS 2, see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
 ## Installation
 
 ```shell script
-yarn add chart.js
-yarn add @j-t-mcc/vue3-chartjs
+yarn add chart.js @j-t-mcc/vue3-chartjs
 
-npm install chart.js
-npm install @j-t-mcc/vue3-chartjs
+npm install chart.js @j-t-mcc/vue3-chartjs
 ```
 
 ## Configuration
@@ -340,11 +338,12 @@ Example usage with locally imported chart component:
 
 ```vue
 <template>
-  <div style="height:600px;width: 600px; display: flex;flex-direction:column;">
+  <div style="height:600px;width:600px;">
     <vue3-chart-js
         :id="lineChart.id"
         :type="lineChart.type"
         :data="lineChart.data"
+        :options="lineChart.options"
     ></vue3-chart-js>
   </div>
 </template>
@@ -368,7 +367,7 @@ export default {
         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
         datasets: [{
           label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
+          data: [50, 19, 3, 5, 2, 3],
           backgroundColor: [
             'rgba(255, 99, 132, 0.2)',
             'rgba(54, 162, 235, 0.2)',
@@ -389,26 +388,20 @@ export default {
         }]
       },
       options: {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
-          }]
-        },
         plugins: {
           zoom: {
-            pan: {
-              enabled: true,
-              mode: 'y'
-            },
             zoom: {
-              enabled: true,
-              mode: 'y'
-            }
-          }
-        }
-      }
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true,
+              },
+              mode: "y",
+            },
+          },
+        },
+      },
     }
 
     return {

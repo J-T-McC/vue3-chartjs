@@ -61,6 +61,16 @@ const Vue3ChartJs = defineComponent({
       type: String,
       required: true
     },
+    height: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    width: {
+      type: Number,
+      required: false,
+      default: null
+    },
     data: {
       type: Object,
       required: true
@@ -136,9 +146,11 @@ const Vue3ChartJs = defineComponent({
     }
   },
 
-  render () {
+  render (props) {
     return h('canvas', {
-      ref: 'chartRef'
+      ref: 'chartRef',
+      height: props.height,
+      width: props.width
     })
   }
 })

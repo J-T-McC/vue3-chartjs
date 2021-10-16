@@ -1,7 +1,7 @@
 # Vue3 ChartJS Wrapper
 
 [![Coverage Status](https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main)](https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main)
-[![Build Status](https://travis-ci.com/J-T-McC/vue3-chartjs.svg?branch=main)](https://travis-ci.com/J-T-McC/vue3-chartjs)
+[![Build Status](https://travis-ci.com/J-T-McC/vue3-chartjs.svg?branch=main)](https://app.travis-ci.com/github/J-T-McC/vue3-chartjs)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
 ![npm](https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs)
 
@@ -26,11 +26,23 @@ npm install chart.js @j-t-mcc/vue3-chartjs
 
 Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS.
 
+ChartJS charts are responsive by default. If you wish to have a fixed sized chart, you can set the optional `height` and `width` properties, paired with setting responsive to `false` in the `options` property.  
+
 ```js
   props: {
     type: {
-      type: String,
+      type: String, 
       required: true
+    },
+    height: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    width: {
+      type: Number,
+      required: false,
+      default: null
     },
     data: {
       type: Object,

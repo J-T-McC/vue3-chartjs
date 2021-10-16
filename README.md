@@ -1,7 +1,7 @@
 # Vue3 ChartJS Wrapper
 
 [![Coverage Status](https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main)](https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main)
-[![Build Status](https://travis-ci.com/J-T-McC/vue3-chartjs.svg?branch=main)](https://travis-ci.com/J-T-McC/vue3-chartjs)
+[![Build Status](https://travis-ci.com/J-T-McC/vue3-chartjs.svg?branch=main)](https://app.travis-ci.com/github/J-T-McC/vue3-chartjs)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
 ![npm](https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs)
 

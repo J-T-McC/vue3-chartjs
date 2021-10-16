@@ -1,1 +1,163 @@
-var e=Object.defineProperty,t=Object.getOwnPropertySymbols,r=Object.prototype.hasOwnProperty,a=Object.prototype.propertyIsEnumerable,n=(t,r,a)=>r in t?e(t,r,{enumerable:!0,configurable:!0,writable:!0,value:a}):t[r]=a,o=(e,o)=>{for(var p in o||(o={}))r.call(o,p)&&n(e,p,o[p]);if(t)for(var p of t(o))a.call(o,p)&&n(e,p,o[p]);return e};import{defineComponent as p,ref as s,onMounted as l,h as i}from"vue";import{Chart as u,ArcElement as d,LineElement as f,BarElement as c,PointElement as h,BarController as y,BubbleController as b,DoughnutController as g,LineController as v,PieController as m,PolarAreaController as P,RadarController as D,ScatterController as O,CategoryScale as j,LinearScale as U,LogarithmicScale as w,RadialLinearScale as R,TimeScale as S,TimeSeriesScale as z,Decimation as C,Filler as E,Legend as I,Title as J,Tooltip as L}from"chart.js";const _=["install","start","stop","beforeInit","afterInit","beforeUpdate","afterUpdate","beforeElementsUpdate","reset","beforeDatasetsUpdate","afterDatasetsUpdate","beforeDatasetUpdate","afterDatasetUpdate","beforeLayout","afterLayout","afterLayout","beforeRender","afterRender","resize","destroy","uninstall","afterTooltipDraw","beforeTooltipDraw"];u.register(d,f,c,h,y,b,g,v,m,P,D,O,j,U,w,R,S,z,C,E,I,J,L);const q=p({name:"Vue3ChartJs",props:{type:{type:String,required:!0},data:{type:Object,required:!0},options:{type:Object,default:()=>({})},plugins:{type:Array,default:()=>[]}},emits:_,setup(e,{emit:t}){const r=s(null),a={chart:null,plugins:[_.reduce(((e,a)=>{const n=function(e,t=null){return{type:e,chartRef:t,preventDefault(){this._defaultPrevented=!0},isDefaultPrevented(){return!this._defaultPrevented},_defaultPrevented:!1}}(a,r);return o(o({},e),function(e,t){return{[t.type]:()=>(e(t.type,t),t.isDefaultPrevented())}}(t,n))}),{id:"Vue3ChartJsEventHookPlugin"}),...e.plugins],props:o({},e)},n=()=>a.chart?a.chart.update():a.chart=new u(r.value.getContext("2d"),{type:a.props.type,data:a.props.data,options:a.props.options,plugins:a.plugins});return l((()=>n())),{chartJSState:a,chartRef:r,render:n,resize:()=>a.chart&&a.chart.resize(),update:(e=750)=>{a.chart.data=o(o({},a.chart.data),a.props.data),a.chart.options=o(o({},a.chart.options),a.props.options),a.chart.update(e)},destroy:()=>{a.chart&&(a.chart.destroy(),a.chart=null)}}},render:()=>i("canvas",{ref:"chartRef"})});q.registerGlobalPlugins=e=>{u.register(...e)},q.install=(e,t={})=>{var r;e.component(q.name,q),(null==(r=null==t?void 0:t.plugins)?void 0:r.length)&&q.registerGlobalPlugins(t.plugins)};export{q as default};
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+import { defineComponent, ref, onMounted, h } from "vue";
+import { Chart, ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip } from "chart.js";
+const chartJsEventNames = [
+  "install",
+  "start",
+  "stop",
+  "beforeInit",
+  "afterInit",
+  "beforeUpdate",
+  "afterUpdate",
+  "beforeElementsUpdate",
+  "reset",
+  "beforeDatasetsUpdate",
+  "afterDatasetsUpdate",
+  "beforeDatasetUpdate",
+  "afterDatasetUpdate",
+  "beforeLayout",
+  "afterLayout",
+  "afterLayout",
+  "beforeRender",
+  "afterRender",
+  "resize",
+  "destroy",
+  "uninstall",
+  "afterTooltipDraw",
+  "beforeTooltipDraw"
+];
+function generateEventObject(type, chartRef = null) {
+  return {
+    type,
+    chartRef,
+    preventDefault() {
+      this._defaultPrevented = true;
+    },
+    isDefaultPrevented() {
+      return !this._defaultPrevented;
+    },
+    _defaultPrevented: false
+  };
+}
+function generateChartJsEventListener(emit, event) {
+  return {
+    [event.type]: () => {
+      emit(event.type, event);
+      return event.isDefaultPrevented();
+    }
+  };
+}
+Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip);
+const Vue3ChartJs = defineComponent({
+  name: "Vue3ChartJs",
+  props: {
+    type: {
+      type: String,
+      required: true
+    },
+    height: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    width: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    data: {
+      type: Object,
+      required: true
+    },
+    options: {
+      type: Object,
+      default: () => ({})
+    },
+    plugins: {
+      type: Array,
+      default: () => []
+    }
+  },
+  emits: chartJsEventNames,
+  setup(props, { emit }) {
+    const chartRef = ref(null);
+    const chartJsEventsPlugin = chartJsEventNames.reduce((reduced, eventType) => {
+      const event = generateEventObject(eventType, chartRef);
+      return __spreadValues(__spreadValues({}, reduced), generateChartJsEventListener(emit, event));
+    }, { id: "Vue3ChartJsEventHookPlugin" });
+    const chartJSState = {
+      chart: null,
+      plugins: [
+        chartJsEventsPlugin,
+        ...props.plugins
+      ],
+      props: __spreadValues({}, props)
+    };
+    const destroy = () => {
+      if (chartJSState.chart) {
+        chartJSState.chart.destroy();
+        chartJSState.chart = null;
+      }
+    };
+    const update = (animateSpeed = 750) => {
+      chartJSState.chart.data = __spreadValues(__spreadValues({}, chartJSState.chart.data), chartJSState.props.data);
+      chartJSState.chart.options = __spreadValues(__spreadValues({}, chartJSState.chart.options), chartJSState.props.options);
+      chartJSState.chart.update(animateSpeed);
+    };
+    const resize = () => chartJSState.chart && chartJSState.chart.resize();
+    const render = () => {
+      if (chartJSState.chart) {
+        return chartJSState.chart.update();
+      }
+      return chartJSState.chart = new Chart(chartRef.value.getContext("2d"), {
+        type: chartJSState.props.type,
+        data: chartJSState.props.data,
+        options: chartJSState.props.options,
+        plugins: chartJSState.plugins
+      });
+    };
+    onMounted(() => render());
+    return {
+      chartJSState,
+      chartRef,
+      render,
+      resize,
+      update,
+      destroy
+    };
+  },
+  render(props) {
+    return h("canvas", {
+      ref: "chartRef",
+      height: props.height,
+      width: props.width
+    });
+  }
+});
+const _sfc_main = Vue3ChartJs;
+_sfc_main.registerGlobalPlugins = (plugins) => {
+  Chart.register(...plugins);
+};
+_sfc_main.install = (app, options = {}) => {
+  var _a;
+  app.component(_sfc_main.name, _sfc_main);
+  if ((_a = options == null ? void 0 : options.plugins) == null ? void 0 : _a.length) {
+    _sfc_main.registerGlobalPlugins(options.plugins);
+  }
+};
+export { _sfc_main as default };

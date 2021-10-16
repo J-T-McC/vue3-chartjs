@@ -1,16 +1,12 @@
 <template>
-  <div style="height:600px;width: 600px;">
-
-    <div style="width: 500px">
+    <div style="width: 100%;height:20%;display: block;">
       <vue3-chart-js v-bind="{...barChart}"  @after-update="afterUpdate"/>
     </div>
-    <div style="width: 500px">
+    <div style="display: block;">
       <vue3-chart-js ref="chartRef" v-bind="{...localDoughnutChartOptions}" @after-update="afterUpdate"/>
     </div>
     <button type="submit" @click="updateChart">Update Doughnut Data</button>
     <button type="submit" @click="exportChart">Export Chart as PNG</button>
-
-  </div>
 </template>
 
 <script>
@@ -37,11 +33,18 @@ export default {
         }]
       },
       options: {
+        maintainAspectRatio: false,
         plugins: {
           zoom: {
             zoom: {
-              enabled: true,
-              mode: 'xy',
+              wheel: {
+                enabled: true,
+                mode: 'xy',
+              },
+              pinch: {
+                enabled: true,
+                mode: 'xy',
+              }
             }
           }
         }
@@ -51,6 +54,8 @@ export default {
     const doughnutChart = {
       id: 'doughnut',
       type: 'doughnut',
+      height: 800,
+      width: 800,
       data: {
         labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
         datasets: [
@@ -66,6 +71,7 @@ export default {
         ]
       },
       options: {
+        responsive: false,
         cutout: '10%',
         plugins: {}
       }

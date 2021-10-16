@@ -26,11 +26,23 @@ npm install chart.js @j-t-mcc/vue3-chartjs
 
 Component props use the same structure as ChartJS arguments and are passed as-is to the instance of ChartJS.
 
+ChartJS charts are responsive by default. If you wish to have a fixed sized chart, you can set the optional `height` and `width` properties, paired with setting responsive to `false` in the `options` property.  
+
 ```js
   props: {
     type: {
-      type: String,
+      type: String, 
       required: true
+    },
+    height: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    width: {
+      type: Number,
+      required: false,
+      default: null
     },
     data: {
       type: Object,

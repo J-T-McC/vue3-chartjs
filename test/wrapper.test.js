@@ -50,6 +50,18 @@ describe('init', () => {
   })
 })
 
+describe('chart dimensions', () => {
+  it('it sets fixed height and width', async () => {
+    const props = getDoughnutProps()
+    props.options.responsive = false
+    props.width = props.height = 800
+    const wrapper = factory(props)
+    wrapper.vm.render()
+    expect(wrapper.vm.chartJSState.chart.height).toEqual(800)
+    expect(wrapper.vm.chartJSState.chart.width).toEqual(800)
+  })
+})
+
 describe('chart reloading', () => {
   it('reloads if already exists', async () => {
     const wrapper = factory(getDoughnutProps())

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+<body>
+<div id="app">
+    <div style="width: 400px;height: 400px;">
+        <vue3-chart-js ref="chartRef" v-bind="{...doughnutChart}" />
+    </div>
+    <button @click="updateChart">Update Chart</button>
+</div>
+
+<script src="https://unpkg.com/vue@next"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.0/dist/chart.min.js"></script>
+<script src="../dist/vue3-chartjs.umd.js"></script>
+<script>
+  const { ref, createApp } = Vue
+  createApp({
+    components: {
+      Vue3ChartJs
+    },
+    setup () {
+      const chartRef = ref(null)
+
+      const doughnutChart = {
+        id: 'doughnut',
+        type: 'doughnut',
+        data: {
+          labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+          datasets: [
+            {
+              backgroundColor: [
+                '#41B883',
+                '#E46651',
+                '#00D8FF',
+                '#DD1B16'
+              ],
+              data: [40, 20, 80, 10]
+            }
+          ]
+        },
+        options: {
+          plugins: {
+            zoom: {
+              zoom: {
+                enabled: true,
+                mode: 'xy',
+              }
+            }
+          }
+        }
+      }
+
+      let counter = 1
+
+      const updateChart = () => {
+        doughnutChart.options.plugins.title = {
+          display: true,
+          text: 'Loaded: ' + (counter++)
+        }
+
+        doughnutChart.data.labels.reverse()
+        doughnutChart.data.datasets = [
+          {
+            backgroundColor: [
+              '#' + Math.floor(Math.random() * 16777215).toString(16),
+              '#' + Math.floor(Math.random() * 16777215).toString(16),
+              '#' + Math.floor(Math.random() * 16777215).toString(16),
+              '#' + Math.floor(Math.random() * 16777215).toString(16),
+            ],
+            data: [
+              Math.floor(Math.random() * 500),
+              Math.floor(Math.random() * 500),
+              Math.floor(Math.random() * 500),
+              Math.floor(Math.random() * 500),
+            ]
+          }
+        ]
+
+        chartRef.value.update(750)
+      }
+
+      return {
+        doughnutChart,
+        updateChart,
+        chartRef
+      }
+    }
+  }).mount('#app')
+</script>
+</body>
+</html>

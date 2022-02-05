@@ -1,7 +1,13 @@
 <script>
 import { h, ref, onMounted, defineComponent } from 'vue'
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes'
-import Chart from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js'
+
+// registerables is undefined when using UMD
+// using chart.js via UMD already includes registerables
+if (registerables !== undefined) {
+  Chart.register(...registerables)
+}
 
 const Vue3ChartJs = defineComponent({
   name: 'Vue3ChartJs',

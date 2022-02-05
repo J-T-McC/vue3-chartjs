@@ -1,11 +1,11 @@
 module.exports = {
-  verbose: true,
-  clearMocks: true,
   transform: {
-    '^.+\\.vue$': 'vue-jest',
+    '^.+\\.vue$': 'vue3-jest',
     '^.+\\js$': 'babel-jest'
   },
+  testEnvironment: 'jsdom',
   setupFiles: ['jest-canvas-mock'],
   collectCoverage: true,
-  coverageReporters: ['lcov', 'text-summary']
+  coverageReporters: ['lcov', 'text-summary'],
+  moduleFileExtensions: ['vue', 'js', 'json', 'jsx', 'ts', 'tsx', 'node']
 }

@@ -38,7 +38,7 @@ const barChart = {
 
 const doughnutChart = {
   id: 'doughnut',
-  type: 'line',
+  type: 'doughnut',
   data: {
     labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
     datasets: [

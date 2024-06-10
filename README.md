@@ -1,18 +1,19 @@
 # Vue3 ChartJS Wrapper
 
 [![Coverage Status](https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main)](https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main)
-[![Build Status](https://travis-ci.com/J-T-McC/vue3-chartjs.svg?branch=main)](https://app.travis-ci.com/github/J-T-McC/vue3-chartjs)
+[![Tests](https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml/badge.svg)](https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
 ![npm](https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs)
 
 Basic [ChartJS 3](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
 For ChartJS 2, see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
+For ChartJS 3.1, see [v1.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/v1.3.0)
 
 ## Requirements
 
 - Vue 3
-- ChartJS 3
+- ChartJS 4
 
 ## Installation
 

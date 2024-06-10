@@ -1,45 +1,42 @@
-var __defProp = Object.defineProperty;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
 import { defineComponent, ref, onMounted, h } from "vue";
 import { registerables, Chart } from "chart.js";
 const chartJsEventNames = [
   "install",
+  "uninstall",
+  "beforeInit",
+  "resize",
+  "afterInit",
   "start",
   "stop",
-  "beforeInit",
-  "afterInit",
   "beforeUpdate",
-  "afterUpdate",
+  "beforeLayout",
+  "beforeDataLimits",
+  "afterDataLimits",
+  "beforeBuildTicks",
+  "afterBuildTicks",
+  "afterLayout",
   "beforeElementsUpdate",
-  "reset",
   "beforeDatasetsUpdate",
-  "afterDatasetsUpdate",
   "beforeDatasetUpdate",
   "afterDatasetUpdate",
-  "beforeLayout",
-  "afterLayout",
-  "afterLayout",
+  "afterDatasetsUpdate",
+  "afterUpdate",
   "beforeRender",
+  "beforeDraw",
+  "beforeDatasetsDraw",
+  "beforeDatasetDraw",
+  "afterDatasetDraw",
+  "afterDatasetsDraw",
+  "beforeTooltipDraw",
+  "afterTooltipDraw",
+  "afterDraw",
   "afterRender",
   "resize",
-  "destroy",
-  "uninstall",
-  "afterTooltipDraw",
-  "beforeTooltipDraw"
+  "reset",
+  "beforeDestroy",
+  "afterDestroy",
+  "beforeEvent",
+  "afterEvent"
 ];
 function generateEventObject(type, chartRef = null) {
   return {
@@ -100,7 +97,7 @@ const Vue3ChartJs = defineComponent({
     const chartRef = ref(null);
     const chartJsEventsPlugin = chartJsEventNames.reduce((reduced, eventType) => {
       const event = generateEventObject(eventType, chartRef);
-      return __spreadValues(__spreadValues({}, reduced), generateChartJsEventListener(emit, event));
+      return { ...reduced, ...generateChartJsEventListener(emit, event) };
     }, { id: "Vue3ChartJsEventHookPlugin" });
     const chartJSState = {
       chart: null,
@@ -108,7 +105,7 @@ const Vue3ChartJs = defineComponent({
         chartJsEventsPlugin,
         ...props.plugins
       ],
-      props: __spreadValues({}, props)
+      props: { ...props }
     };
     const destroy = () => {
       if (chartJSState.chart) {
@@ -117,8 +114,8 @@ const Vue3ChartJs = defineComponent({
       }
     };
     const update = (animateSpeed = 750) => {
-      chartJSState.chart.data = __spreadValues(__spreadValues({}, chartJSState.chart.data), chartJSState.props.data);
-      chartJSState.chart.options = __spreadValues(__spreadValues({}, chartJSState.chart.options), chartJSState.props.options);
+      chartJSState.chart.data = { ...chartJSState.chart.data, ...chartJSState.props.data };
+      chartJSState.chart.options = { ...chartJSState.chart.options, ...chartJSState.props.options };
       chartJSState.chart.update(animateSpeed);
     };
     const resize = () => chartJSState.chart && chartJSState.chart.resize();
@@ -126,12 +123,15 @@ const Vue3ChartJs = defineComponent({
       if (chartJSState.chart) {
         return chartJSState.chart.update();
       }
-      return chartJSState.chart = new Chart(chartRef.value.getContext("2d"), {
-        type: chartJSState.props.type,
-        data: chartJSState.props.data,
-        options: chartJSState.props.options,
-        plugins: chartJSState.plugins
-      });
+      return chartJSState.chart = new Chart(
+        chartRef.value.getContext("2d"),
+        {
+          type: chartJSState.props.type,
+          data: chartJSState.props.data,
+          options: chartJSState.props.options,
+          plugins: chartJSState.plugins
+        }
+      );
     };
     onMounted(() => render());
     return {

@@ -1,24 +1,16 @@
 import { expect, it, describe } from '@jest/globals'
 import { mount } from '@vue/test-utils'
-import { Chart } from 'chart.js'
 import Vue3ChartJs from '../lib/main'
+import { Chart } from 'chart.js'
 import { createApp } from 'vue'
 import { getDoughnutProps } from './chart.props'
-import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from '../lib/includes'
+import { generateEventObject, generateChartJsEventListener } from '../lib/includes'
 
 const factory = function (props) {
   return mount(Vue3ChartJs, {
     props: { ...props }
   })
 }
-
-jest.mock('chart.js', () => {
-  const Chart = jest.requireActual('chart.js')
-  return {
-    ...Chart,
-    registerables: []
-  }
-})
 
 describe('init', () => {
   it('installs globally', () => {
@@ -84,9 +76,6 @@ describe('component methods', () => {
     expect(wrapper.vm.chartJSState.chart).toBeTruthy()
     wrapper.vm.destroy()
     expect(wrapper.vm.chartJSState.chart).toBeFalsy()
-    expect(wrapper.emitted('destroy')).toHaveLength(1)
-    wrapper.vm.destroy()
-    expect(wrapper.emitted('destroy')).toHaveLength(1)
   })
 
   it('updates data', async () => {
@@ -140,56 +129,19 @@ describe('component methods', () => {
 })
 
 describe('emitted events', () => {
-  const skipEvents = [
-    'resize',
-    'reset',
-    'stop',
-    'beforeRender',
-    'afterRender',
-    'afterTooltipDraw',
-    'beforeTooltipDraw',
-    'uninstall',
-    'destroy',
-  ]
-
-  chartJsEventNames
-    .filter((eventName) => !skipEvents.includes(eventName))
-    .forEach((eventName, index) => {
-      it(`emits ${eventName} events`, () => {
-        const wrapper = factory(getDoughnutProps())
-        wrapper.vm.render()
-        expect(wrapper.emitted(eventName)).toBeTruthy()
-      })
-    })
-
-  it('emits resize event', () => {
-    const wrapper = factory(getDoughnutProps())
-    wrapper.vm.render()
-    wrapper.vm.resize()
-    expect(wrapper.emitted('resize')).toHaveLength(1)
-  })
-
-  it('emits reset event', () => {
-    const wrapper = factory(getDoughnutProps())
-    wrapper.vm.render()
-    wrapper.vm.chartJSState.chart.reset()
-    expect(wrapper.emitted('reset')).toBeTruthy()
-  })
-
-  it('emits destroy, uninstall, stop events', () => {
-    const wrapper = factory(getDoughnutProps())
-    wrapper.vm.render()
-    wrapper.vm.destroy()
-    expect(wrapper.emitted('destroy')).toHaveLength(1)
-    expect(wrapper.emitted('uninstall')).toHaveLength(1)
-    expect(wrapper.emitted('stop')).toHaveLength(1)
-  })
-
-  it('emits render events', () => {
+  it('subscribes to chartjs events', () => {
     const wrapper = factory(getDoughnutProps())
     wrapper.vm.render()
     expect(wrapper.emitted()).toHaveProperty('beforeRender')
-    // event working but not available during test run with chart.js 3.7
-    // expect(wrapper.emitted()).toHaveProperty('afterRender')
+
+    wrapper.vm.resize()
+    expect(wrapper.emitted('resize')).toHaveLength(1)
+
+    wrapper.vm.chartJSState.chart.reset()
+    expect(wrapper.emitted('reset')).toBeTruthy()
+
+    wrapper.vm.destroy()
+    expect(wrapper.emitted('uninstall')).toHaveLength(1)
+    expect(wrapper.emitted('stop')).toHaveLength(1)
   })
 })

@@ -5,9 +5,10 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
 ![npm](https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs)
 
-Basic [ChartJS 3](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
+Basic [ChartJS 4](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
 
 For ChartJS 2, see [v0.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/0.3.0)
+
 For ChartJS 3.1, see [v1.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/v1.3.0)
 
 ## Requirements

@@ -1,18 +1,26 @@
 <template>
   <div style="width: 100%;height:20%;display: block;">
-    <vue3-chart-js v-bind="{...barChart}" @after-update="afterUpdate"/>
+    <vue3-chart-js v-bind="{...barChart}" @after-update="afterUpdate" />
   </div>
   <div style="display: block;">
-    <vue3-chart-js ref="chartRef" v-bind="{...localDoughnutChartOptions}" @after-render="afterRender"/>
+    <vue3-chart-js
+        ref="chartRef"
+        v-bind="{...localDoughnutChartOptions}"
+        @after-render="afterRender"
+        @after-destroy="afterDestroy"
+        @after-event="afterEvent"
+    />
   </div>
   <button type="submit" @click="updateChart">Update Doughnut Data</button>
   <button type="submit" @click="exportChart">Export Chart as PNG</button>
+  <button type="submit" @click="destroyChart">destroy doughnut chart</button>
+  <button type="submit" @click="renderChart">render doughnut chart</button>
 </template>
 
 <script setup>
 
 import { ref } from 'vue'
-import Vue3ChartJs from '../'
+import Vue3ChartJs from '../lib/Vue3ChartJs.vue'
 
 const barChart = {
   type: 'line',
@@ -122,6 +130,22 @@ const updateChart = () => {
   ]
 
   chartRef.value.update(750)
+}
+
+const destroyChart = () => {
+  chartRef.value.destroy()
+}
+
+const renderChart = () => {
+  chartRef.value.render()
+}
+
+const afterDestroy = (e) => {
+  console.log('chart is destroyed', e)
+}
+
+const afterEvent = (e) => {
+  console.log('afterEvent', e)
 }
 
 const exportChart = () => {

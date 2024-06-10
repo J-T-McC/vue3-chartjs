@@ -9,10 +9,10 @@ Vue3ChartJs.registerGlobalPlugins([zoomPlugin])
 
 const Vue = createApp(App)
 
-// Vue.use(Vue3ChartJs, {
-//   plugins: [
-//     zoomPlugin
-//   ]
-// })
+Vue.use(Vue3ChartJs, {
+  plugins: [
+    zoomPlugin
+  ]
+})
 
 Vue.mount('#app')

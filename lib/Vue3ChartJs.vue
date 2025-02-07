@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, defineProps, defineEmits, VNodeRef, defineExpose } from 'vue';
+import { ref, onMounted, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
 import { Chart, registerables, Plugin } from 'chart.js';
 import {

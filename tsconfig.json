@@ -12,6 +12,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": false,
+    "types": [
+      "jest"
+    ]
   },
   "include": ["lib/**/*.ts", "lib/**/*.vue", "lib/shims-vue.d.ts"]
 }

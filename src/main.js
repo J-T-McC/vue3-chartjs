@@ -3,8 +3,6 @@ import App from './App.vue'
 
 import Vue3ChartJs from '../';
 
-console.log(Vue3ChartJs)
-
 import zoomPlugin from 'chartjs-plugin-zoom'
 
 Vue3ChartJs.registerGlobalPlugins([zoomPlugin])

@@ -55,7 +55,7 @@ function generateChartJsEventListener(emit, event) {
   return {
     [event.type]: () => {
       emit(event.type, event);
-      return event._defaultPrevented;
+      return event.isDefaultPrevented();
     }
   };
 }
@@ -67,11 +67,11 @@ const _sfc_main = defineComponent({
     height: {},
     width: {},
     data: {},
-    options: {},
-    plugins: {}
+    options: { default: {} },
+    plugins: { default: [] }
   },
   emits: chartJsEventNames,
-  setup(__props, { emit: __emit }) {
+  setup(__props, { expose: __expose, emit: __emit }) {
     var _a;
     if (registerables !== void 0) {
       Chart.register(...registerables);
@@ -91,33 +91,43 @@ const _sfc_main = defineComponent({
       ],
       props: { ...props }
     };
+    const destroy = () => {
+      if (chartJSState.chart) {
+        chartJSState.chart.destroy();
+        chartJSState.chart = null;
+      }
+    };
+    const update = (mode = "default") => {
+      if (chartJSState.chart) {
+        chartJSState.chart.data = { ...chartJSState.chart.data, ...chartJSState.props.data };
+        chartJSState.chart.options = { ...chartJSState.chart.options, ...chartJSState.props.options };
+        chartJSState.chart.update(mode);
+      }
+    };
+    const resize = () => {
+      if (chartJSState.chart) {
+        chartJSState.chart.resize();
+      }
+    };
     const render = () => {
-      console.log(chartJSState.chart, {
-        type: chartJSState.props.type,
-        data: chartJSState.props.data,
-        options: chartJSState.props.options,
-        plugins: chartJSState.plugins
-      });
       if (chartJSState.chart) {
         return chartJSState.chart.update();
       }
-      console.log(chartRef.value.getContext("2d"));
       chartJSState.chart = new Chart(chartRef.value.getContext("2d"), {
         type: chartJSState.props.type,
         data: chartJSState.props.data,
         options: chartJSState.props.options,
         plugins: chartJSState.plugins
       });
-      console.log("chart is after init", chartJSState.chart);
     };
-    onMounted(() => {
-      render();
-      setTimeout(() => {
-        var _a2;
-        console.log("update");
-        (_a2 = chartJSState.chart) == null ? void 0 : _a2.update();
-      }, 1e3);
+    __expose({
+      chartJSState,
+      render,
+      destroy,
+      update,
+      resize
     });
+    onMounted(() => render());
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("canvas", {
         ref_key: "chartRef",

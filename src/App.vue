@@ -149,6 +149,8 @@ const afterEvent = (e) => {
 }
 
 const exportChart = () => {
+  console.log(chartRef.value)
+
   let a = document.createElement('a')
   a.href = chartRef.value.chartJSState.chart.toBase64Image('image/png', 1)
   a.download = 'image-export.png'

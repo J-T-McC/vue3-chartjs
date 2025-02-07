@@ -10,7 +10,8 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": false,
   },
   "include": ["lib/**/*.ts", "lib/**/*.vue", "lib/shims-vue.d.ts"]
 }

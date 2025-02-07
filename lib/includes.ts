@@ -41,13 +41,13 @@ const chartJsEventNames: string[] = [
 
 interface EventObject {
   type: string;
-  chartRef: Ref<VNodeRef | null>;
+  chartRef?: Ref<VNodeRef | null>;
   preventDefault: () => void;
   isDefaultPrevented: () => boolean;
   _defaultPrevented: boolean;
 }
 
-function generateEventObject(type: string, chartRef: Ref<VNodeRef | null>): EventObject {
+function generateEventObject(type: string, chartRef?: Ref<VNodeRef | null>): EventObject {
   return {
     type: type,
     chartRef: chartRef,
@@ -65,7 +65,8 @@ function generateChartJsEventListener(emit: (event: string, ...args: any[]) => v
   return {
     [event.type]: () => {
       emit(event.type, event);
-      return event._defaultPrevented;
+
+      return event.isDefaultPrevented();
     }
   };
 }

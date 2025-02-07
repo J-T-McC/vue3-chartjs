@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import { ref, onMounted, defineProps, defineEmits, VNodeRef, nextTick } from 'vue';
+import { ref, onMounted, defineProps, defineEmits, VNodeRef, defineExpose } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
-import { Chart, registerables, Plugin, UpdateModeEnum } from 'chart.js';
+import { Chart, registerables, Plugin } from 'chart.js';
 import {
   ChartType,
   ChartData,
   ChartOptions,
 } from 'chart.js/dist/types';
+
+type UpdateMode = 'resize' | 'reset' | 'default' | 'none' | 'hide' | 'show' | 'active';
 
 // registerables is undefined when using UMD
 // using chart.js via UMD already includes registerables
@@ -14,14 +16,17 @@ if (registerables !== undefined) {
   Chart.register(...registerables);
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   type: ChartType;
   height?: number;
   width?: number;
   data: ChartData;
   options?: ChartOptions;
   plugins?: Plugin[];
-}>();
+}>(), {
+  options: {} as any,
+  plugins: [] as any,
+});
 
 const emit = defineEmits(chartJsEventNames);
 
@@ -49,7 +54,7 @@ const destroy = () => {
   }
 };
 
-const update = (mode: UpdateModeEnum = UpdateModeEnum.default) => {
+const update = (mode: UpdateMode = 'default') => {
   if (chartJSState.chart) {
     chartJSState.chart.data = { ...chartJSState.chart.data, ...chartJSState.props.data };
     chartJSState.chart.options = { ...chartJSState.chart.options, ...chartJSState.props.options };
@@ -64,18 +69,9 @@ const resize = () => {
 };
 
 const render = () => {
-  console.log(chartJSState.chart , {
-    type: chartJSState.props.type,
-    data: chartJSState.props.data,
-    options: chartJSState.props.options,
-    plugins: chartJSState.plugins
-  })
-
   if (chartJSState.chart) {
     return chartJSState.chart.update();
   }
-
-  console.log(chartRef.value.getContext('2d'))
 
   chartJSState.chart = new Chart(chartRef.value.getContext('2d') as CanvasRenderingContext2D, {
     type: chartJSState.props.type,
@@ -83,18 +79,17 @@ const render = () => {
     options: chartJSState.props.options,
     plugins: chartJSState.plugins
   });
-
-  console.log('chart is after init', chartJSState.chart)
 };
 
-onMounted(() => {
-  render();
-
-  setTimeout(() => {
-    console.log('update')
-    chartJSState.chart?.update();
-  }, 1000);
+defineExpose({
+  chartJSState,
+  render,
+  destroy,
+  update,
+  resize,
 });
+
+onMounted(() => render());
 </script>
 
 <template>

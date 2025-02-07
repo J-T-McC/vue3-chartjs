@@ -1,7 +1,8 @@
 module.exports = {
+  preset: 'ts-jest',
   transform: {
     '^.+\\.vue$': '@vue/vue3-jest',
-    '^.+\\js$': 'babel-jest'
+    '^.+\\ts': 'ts-jest'
   },
   testEnvironment: 'jsdom',
   testEnvironmentOptions: {
@@ -12,5 +13,5 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['lcov', 'text'],
   coverageProvider: "v8",
-  moduleFileExtensions: ['vue', 'js', 'json', 'jsx', 'ts', 'tsx', 'node']
+  moduleFileExtensions: ['vue', 'js', 'json', 'jsx', 'ts', 'tsx', 'node'],
 }

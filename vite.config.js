@@ -3,12 +3,19 @@ const path = require('path')
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import checker from 'vite-plugin-checker'
+import dts from 'vite-plugin-dts';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    checker({ typescript: true })
+    checker({ typescript: true }),
+    dts({
+      outputDir: 'dist',
+      entryRoot: 'lib',
+      insertTypesEntry: true,
+      rollupTypes: true,
+    }),
   ],
   build: {
     lib: {

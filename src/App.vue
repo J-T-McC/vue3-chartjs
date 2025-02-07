@@ -20,7 +20,7 @@
 <script setup>
 
 import { ref } from 'vue'
-import Vue3ChartJs from '../lib/Vue3ChartJs.vue'
+import Vue3ChartJs from '../';
 
 const barChart = {
   type: 'line',
@@ -157,3 +157,4 @@ const exportChart = () => {
 }
 
 </script>
+

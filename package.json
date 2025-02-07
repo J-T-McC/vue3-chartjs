@@ -28,7 +28,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "eslint lib/** && jest --coverage && vite build",
+    "build-og": "eslint lib/** && jest --coverage && vite build",
+    "build": "vite build && vue-tsc --noEmit false",
+    "build-copy": "eslint lib/** && jest --coverage && vite build && vue-tsc --noEmit false",
     "serve": "vite preview",
     "test": "jest --coverage",
     "lint": "eslint lib/**"
@@ -40,6 +42,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
+    "@types/node": "^22.13.1",
     "@vitejs/plugin-vue": "^1.10.2",
     "@vue/compiler-sfc": "^3.4.27",
     "@vue/test-utils": "^2.4.6",
@@ -58,8 +61,11 @@
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "2.2.1",
+    "typescript": "^5.7.3",
     "vite": "^2.9.18",
-    "vue": "^3.4.27"
+    "vite-plugin-checker": "^0.8.0",
+    "vue": "^3.4.27",
+    "vue-tsc": "^2.2.0"
   },
   "babel": {
     "presets": [

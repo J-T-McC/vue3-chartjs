@@ -15,24 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
 
       - name: Install
-        run: pnpm install
+        run: npm install --legacy-peer-deps
 
       - name: Run tests
-        run: pnpm test
+        run: npm test
 
       - name: Upload coverage to Coveralls
-        run: cat ./coverage/lcov.info | pnpm coveralls
+        run: cat ./coverage/lcov.info | npx coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

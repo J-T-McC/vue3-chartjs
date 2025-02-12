@@ -1,4 +1,4 @@
-import { Ref, VNodeRef } from 'vue';
+import { Ref, VNodeRef, EmitFn } from 'vue';
 declare const chartJsEventNames: string[];
 interface EventObject {
     type: string;
@@ -8,7 +8,7 @@ interface EventObject {
     _defaultPrevented: boolean;
 }
 declare function generateEventObject(type: string, chartRef?: Ref<VNodeRef | null>): EventObject;
-declare function generateChartJsEventListener(emit: (event: string, ...args: any[]) => void, event: EventObject): {
+declare function generateChartJsEventListener(emit: EmitFn, event: EventObject): {
     [x: string]: () => boolean;
 };
 export { chartJsEventNames, generateEventObject, generateChartJsEventListener, };

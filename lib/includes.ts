@@ -1,4 +1,4 @@
-import { Ref, VNodeRef } from 'vue';
+import { Ref, VNodeRef, EmitFn } from 'vue';
 
 const chartJsEventNames: string[] = [
   'install',
@@ -61,7 +61,7 @@ function generateEventObject(type: string, chartRef?: Ref<VNodeRef | null>): Eve
   };
 }
 
-function generateChartJsEventListener(emit: (event: string, ...args: any[]) => void, event: EventObject) {
+function generateChartJsEventListener(emit: EmitFn, event: EventObject) {
   return {
     [event.type]: () => {
       emit(event.type, event);

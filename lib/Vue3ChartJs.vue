@@ -24,8 +24,8 @@ const props = withDefaults(defineProps<{
   options?: ChartOptions;
   plugins?: Plugin[];
 }>(), {
-  options: {} as any,
-  plugins: [] as any,
+  options: () => ({}),
+  plugins: () => ([]),
 });
 
 const emit = defineEmits(chartJsEventNames);

@@ -1,6 +1,6 @@
-import { defineComponent, ref, onMounted, openBlock, createElementBlock } from "vue";
-import { registerables, Chart } from "chart.js";
-const chartJsEventNames = [
+import { defineComponent as m, ref as v, onMounted as w, createElementBlock as y, openBlock as E } from "vue";
+import { registerables as p, Chart as i } from "chart.js";
+const c = [
   "install",
   "uninstall",
   "beforeInit",
@@ -38,114 +38,84 @@ const chartJsEventNames = [
   "beforeEvent",
   "afterEvent"
 ];
-function generateEventObject(type, chartRef) {
+function P(r, t) {
   return {
-    type,
-    chartRef,
+    type: r,
+    chartRef: t,
     preventDefault() {
-      this._defaultPrevented = true;
+      this._defaultPrevented = !0;
     },
     isDefaultPrevented() {
       return !this._defaultPrevented;
     },
-    _defaultPrevented: false
+    _defaultPrevented: !1
   };
 }
-function generateChartJsEventListener(emit, event) {
+function _(r, t) {
   return {
-    [event.type]: () => {
-      emit(event.type, event);
-      return event.isDefaultPrevented();
-    }
+    [t.type]: () => (r(t.type, t), t.isDefaultPrevented())
   };
 }
-const _hoisted_1 = ["height", "width"];
-const _sfc_main = defineComponent({
+const J = ["height", "width"], s = /* @__PURE__ */ m({
   __name: "Vue3ChartJs",
   props: {
     type: {},
     height: {},
     width: {},
     data: {},
-    options: { default: {} },
-    plugins: { default: [] }
+    options: { default: () => ({}) },
+    plugins: { default: () => [] }
   },
-  emits: chartJsEventNames,
-  setup(__props, { expose: __expose, emit: __emit }) {
-    var _a;
-    if (registerables !== void 0) {
-      Chart.register(...registerables);
-    }
-    const props = __props;
-    const emit = __emit;
-    const chartRef = ref(null);
-    const chartJsEventsPlugin = chartJsEventNames.reduce((reduced, eventType) => {
-      const event = generateEventObject(eventType, chartRef);
-      return { ...reduced, ...generateChartJsEventListener(emit, event) };
-    }, { id: "Vue3ChartJsEventHookPlugin" });
-    const chartJSState = {
+  emits: c,
+  setup(r, { expose: t, emit: n }) {
+    p !== void 0 && i.register(...p);
+    const f = r, d = n, o = v(null), e = {
       chart: null,
       plugins: [
-        chartJsEventsPlugin,
-        ...(_a = props.plugins) != null ? _a : []
+        c.reduce((a, u) => {
+          const b = P(u, o);
+          return { ...a, ..._(d, b) };
+        }, { id: "Vue3ChartJsEventHookPlugin" }),
+        ...f.plugins ?? []
       ],
-      props: { ...props }
-    };
-    const destroy = () => {
-      if (chartJSState.chart) {
-        chartJSState.chart.destroy();
-        chartJSState.chart = null;
-      }
-    };
-    const update = (mode = "default") => {
-      if (chartJSState.chart) {
-        chartJSState.chart.data = { ...chartJSState.chart.data, ...chartJSState.props.data };
-        chartJSState.chart.options = { ...chartJSState.chart.options, ...chartJSState.props.options };
-        chartJSState.chart.update(mode);
-      }
-    };
-    const resize = () => {
-      if (chartJSState.chart) {
-        chartJSState.chart.resize();
-      }
-    };
-    const render = () => {
-      if (chartJSState.chart) {
-        return chartJSState.chart.update();
-      }
-      chartJSState.chart = new Chart(chartRef.value.getContext("2d"), {
-        type: chartJSState.props.type,
-        data: chartJSState.props.data,
-        options: chartJSState.props.options,
-        plugins: chartJSState.plugins
+      props: { ...f }
+    }, h = () => {
+      e.chart && (e.chart.destroy(), e.chart = null);
+    }, g = (a = "default") => {
+      e.chart && (e.chart.data = { ...e.chart.data, ...e.props.data }, e.chart.options = { ...e.chart.options, ...e.props.options }, e.chart.update(a));
+    }, D = () => {
+      e.chart && e.chart.resize();
+    }, l = () => {
+      if (e.chart)
+        return e.chart.update();
+      e.chart = new i(o.value.getContext("2d"), {
+        type: e.props.type,
+        data: e.props.data,
+        options: e.props.options,
+        plugins: e.plugins
       });
     };
-    __expose({
-      chartJSState,
-      render,
-      destroy,
-      update,
-      resize
-    });
-    onMounted(() => render());
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("canvas", {
-        ref_key: "chartRef",
-        ref: chartRef,
-        height: _ctx.height,
-        width: _ctx.width
-      }, null, 8, _hoisted_1);
-    };
+    return t({
+      chartJSState: e,
+      render: l,
+      destroy: h,
+      update: g,
+      resize: D
+    }), w(() => l()), (a, u) => (E(), y("canvas", {
+      ref_key: "chartRef",
+      ref: o,
+      height: a.height,
+      width: a.width
+    }, null, 8, J));
   }
 });
-_sfc_main.registerGlobalPlugins = (plugins) => {
-  Chart.register(...plugins);
+s.registerGlobalPlugins = (r) => {
+  i.register(...r);
 };
-_sfc_main.install = (app, options = {}) => {
-  var _a, _b;
-  app.component((_a = _sfc_main.name) != null ? _a : "Vue3ChartJs", _sfc_main);
-  if ((_b = options == null ? void 0 : options.plugins) == null ? void 0 : _b.length) {
-    _sfc_main.registerGlobalPlugins(options.plugins);
-  }
+s.install = (r, t = {}) => {
+  var n;
+  r.component(s.name ?? "Vue3ChartJs", s), (n = t == null ? void 0 : t.plugins) != null && n.length && s.registerGlobalPlugins(t.plugins);
 };
-export { _sfc_main as default };
+export {
+  s as default
+};

@@ -128,6 +128,17 @@ describe('init', () => {
     const props = wrapper.props() as any;
     expect(props.plugins).toEqual([]);
   });
+
+  it("calls render on mounted", () => {
+    const doughnutProps = getDoughnutProps();
+    const renderSpy = jest.spyOn(Vue3ChartJsPlugin, "render");
+
+    mount(Vue3ChartJsPlugin, {
+      props: doughnutProps
+    });
+
+    expect(renderSpy).toHaveBeenCalled();
+  });
 });
 
 describe('chart dimensions', () => {

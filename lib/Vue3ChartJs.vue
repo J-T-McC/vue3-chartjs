@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+/* c8 ignore next */
 import { ref, onMounted, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
 import { Chart, registerables, Plugin } from 'chart.js';
@@ -10,6 +11,7 @@ import {
 
 type UpdateMode = 'resize' | 'reset' | 'default' | 'none' | 'hide' | 'show' | 'active';
 
+/* c8 ignore next */
 // registerables is undefined when using UMD
 // using chart.js via UMD already includes registerables
 if (registerables !== undefined) {

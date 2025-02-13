@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-import Vue3ChartJs  from '../lib/main'
+import Vue3ChartJs from '../';
 
 import zoomPlugin from 'chartjs-plugin-zoom'
 

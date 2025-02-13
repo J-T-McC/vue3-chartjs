@@ -20,7 +20,7 @@
 <script setup>
 
 import { ref } from 'vue'
-import Vue3ChartJs from '../lib/Vue3ChartJs.vue'
+import Vue3ChartJs from '../';
 
 const barChart = {
   type: 'line',
@@ -149,6 +149,8 @@ const afterEvent = (e) => {
 }
 
 const exportChart = () => {
+  console.log(chartRef.value)
+
   let a = document.createElement('a')
   a.href = chartRef.value.chartJSState.chart.toBase64Image('image/png', 1)
   a.download = 'image-export.png'
@@ -157,3 +159,4 @@ const exportChart = () => {
 }
 
 </script>
+

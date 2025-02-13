@@ -1,11 +1,13 @@
-const chartJsEventNames = [
-  "install",
+import { Ref, VNodeRef, EmitFn } from 'vue';
+
+const chartJsEventNames: string[] = [
+  'install',
   'uninstall',
   'beforeInit',
   'resize',
   'afterInit',
-  "start",
-  "stop",
+  'start',
+  'stop',
   'beforeUpdate',
   'beforeLayout',
   'beforeDataLimits',
@@ -35,35 +37,42 @@ const chartJsEventNames = [
   'afterDestroy',
   'beforeEvent',
   'afterEvent',
-]
+];
 
-function generateEventObject(type , chartRef = null) {
-  //chart js allows some events to be cancelled if they return false
-  //this implements familiar logic to allow vue emitted chart events to be canceled
+interface EventObject {
+  type: string;
+  chartRef?: Ref<VNodeRef | null>;
+  preventDefault: () => void;
+  isDefaultPrevented: () => boolean;
+  _defaultPrevented: boolean;
+}
+
+function generateEventObject(type: string, chartRef?: Ref<VNodeRef | null>): EventObject {
   return {
     type: type,
     chartRef: chartRef,
-    preventDefault () {
-      this._defaultPrevented = true
+    preventDefault() {
+      this._defaultPrevented = true;
     },
-    isDefaultPrevented () {
-      return !this._defaultPrevented
+    isDefaultPrevented() {
+      return !this._defaultPrevented;
     },
     _defaultPrevented: false,
-  }
+  };
 }
 
-function generateChartJsEventListener(emit, event) {
+function generateChartJsEventListener(emit: EmitFn, event: EventObject) {
   return {
     [event.type]: () => {
-      emit(event.type, event)
-      return event.isDefaultPrevented()
+      emit(event.type, event);
+
+      return event.isDefaultPrevented();
     }
-  }
+  };
 }
 
 export {
   chartJsEventNames,
   generateEventObject,
   generateChartJsEventListener,
-}
+};

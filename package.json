@@ -1,6 +1,6 @@
 {
   "name": "@j-t-mcc/vue3-chartjs",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "Tyson McCarney <info@tysonmccarney.com> (https://tysonmccarney.com)",
   "description": "Vue3 wrapper for Chart.js",
   "license": "MIT",

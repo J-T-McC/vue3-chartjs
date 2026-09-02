@@ -59,7 +59,7 @@ function generateEventObject(type: string, chartRef?: Ref<VNodeRef | null>): Eve
       this._defaultPrevented = true;
     },
     isDefaultPrevented() {
-      return !this._defaultPrevented;
+      return this._defaultPrevented;
     },
     _defaultPrevented: false,
   };
@@ -70,7 +70,8 @@ function generateChartJsEventListener(emit: EmitFn, event: EventObject) {
     [event.type]: () => {
       emit(event.type, event);
 
-      return event.isDefaultPrevented();
+      // chart.js cancels a cancellable hook when it returns false
+      return !event.isDefaultPrevented();
     }
   };
 }

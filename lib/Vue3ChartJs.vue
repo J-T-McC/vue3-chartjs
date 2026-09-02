@@ -75,7 +75,9 @@ const destroy = () => {
 const update = (mode: UpdateMode = 'default') => {
   if (chartJSState.chart) {
     chartJSState.chart.data = chartJSState.props.data;
-    chartJSState.chart.options = chartJSState.props.options;
+    // shallow copy so chart.js resolves into an object this component owns,
+    // rather than writing its derived options back onto the caller's
+    chartJSState.chart.options = { ...chartJSState.props.options };
     chartJSState.chart.update(mode);
   }
 };
@@ -94,7 +96,7 @@ const render = () => {
   chartJSState.chart = new Chart(chartRef.value.getContext('2d') as CanvasRenderingContext2D, {
     type: chartJSState.props.type,
     data: chartJSState.props.data,
-    options: chartJSState.props.options,
+    options: { ...chartJSState.props.options },
     plugins: chartJSState.plugins
   });
 };

@@ -84,7 +84,7 @@ const U = ["height", "width"], a = /* @__PURE__ */ m({
     }, l = () => {
       e.chart && (e.chart.destroy(), e.chart = null);
     }, g = (n = "default") => {
-      e.chart && (e.chart.data = e.props.data, e.chart.options = e.props.options, e.chart.update(n));
+      e.chart && (e.chart.data = e.props.data, e.chart.options = { ...e.props.options }, e.chart.update(n));
     }, D = () => {
       e.chart && e.chart.resize();
     }, u = () => {
@@ -93,7 +93,7 @@ const U = ["height", "width"], a = /* @__PURE__ */ m({
       e.chart = new i(o.value.getContext("2d"), {
         type: e.props.type,
         data: e.props.data,
-        options: e.props.options,
+        options: { ...e.props.options },
         plugins: e.plugins
       });
     };

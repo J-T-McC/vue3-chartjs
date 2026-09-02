@@ -46,14 +46,14 @@ function J(r, t) {
       this._defaultPrevented = !0;
     },
     isDefaultPrevented() {
-      return !this._defaultPrevented;
+      return this._defaultPrevented;
     },
     _defaultPrevented: !1
   };
 }
 function U(r, t) {
   return {
-    [t.type]: () => (r(t.type, t), t.isDefaultPrevented())
+    [t.type]: () => (r(t.type, t), !t.isDefaultPrevented())
   };
 }
 const _ = ["height", "width"], a = /* @__PURE__ */ m({

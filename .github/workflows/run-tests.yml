@@ -23,8 +23,28 @@ jobs:
       - name: Install
         run: npm install --legacy-peer-deps
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
       - name: Run tests
         run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # dist/ is committed, so a source change without a rebuild ships a stale
+      # bundle and stale type declarations to consumers
+      - name: Verify committed dist matches the build
+        run: |
+          if [ -n "$(git status --porcelain -- dist/)" ]; then
+            echo "::error::dist/ is out of date. Run 'npm run build' and commit the result."
+            git status --porcelain -- dist/
+            git diff -- dist/
+            exit 1
+          fi
 
       - name: Upload coverage to Coveralls
         run: cat ./coverage/lcov.info | npx coveralls

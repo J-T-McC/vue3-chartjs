@@ -32,7 +32,8 @@
     "dev": "vite",
     "build": "eslint lib/** && jest --coverage --preset ts-jest && vite build && vue-tsc --noEmit false",
     "test": "jest --coverage --preset ts-jest",
-    "lint": "eslint lib/**"
+    "lint": "eslint lib/**",
+    "typecheck": "vue-tsc --noEmit"
   },
   "peerDependencies": {
     "chart.js": "^4.0",

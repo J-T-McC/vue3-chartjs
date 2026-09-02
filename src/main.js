@@ -1,18 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-import Vue3ChartJs from '../';
+// resolves through package.json to the built library in dist/,
+// so the playground exercises the same artifact consumers install
+import Vue3ChartJs from '../'
 
-import zoomPlugin from 'chartjs-plugin-zoom'
-
-Vue3ChartJs.registerGlobalPlugins([zoomPlugin])
-
-const Vue = createApp(App)
-
-Vue.use(Vue3ChartJs, {
-  plugins: [
-    zoomPlugin
-  ]
-})
-
-Vue.mount('#app')
+createApp(App).use(Vue3ChartJs).mount('#app')

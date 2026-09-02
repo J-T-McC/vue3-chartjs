@@ -18,3 +18,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+# playground build output
+demo-dist

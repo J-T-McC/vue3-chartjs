@@ -1,6 +1,6 @@
 {
   "name": "@j-t-mcc/vue3-chartjs",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "author": "Tyson McCarney <info@tysonmccarney.com> (https://tysonmccarney.com)",
   "description": "Vue3 wrapper for Chart.js",
   "license": "MIT",
@@ -34,7 +34,9 @@
     "build": "eslint lib/** && jest --coverage --preset ts-jest && vite build && vue-tsc --noEmit false",
     "test": "jest --coverage --preset ts-jest",
     "lint": "eslint lib/**",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "demo:build": "vite build --config vite.demo.config.js",
+    "demo:preview": "vite preview --config vite.demo.config.js"
   },
   "peerDependencies": {
     "chart.js": "^4.0",

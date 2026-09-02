@@ -13,7 +13,8 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": false,
     "types": [
-      "jest"
+      "jest",
+      "node"
     ]
   },
   "include": ["lib/**/*.ts", "lib/**/*.vue", "lib/shims-vue.d.ts"]

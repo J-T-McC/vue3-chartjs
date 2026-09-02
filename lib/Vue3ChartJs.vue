@@ -1,24 +1,19 @@
 <script lang="ts" setup>
-/* c8 ignore next */
+// imports and type aliases are erased at compile time, and the UMD guard below
+// has no reachable false branch under jest, so v8 has nothing to attribute here
+/* c8 ignore start */
 import { ref, onMounted, onBeforeUnmount, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
-import {
-  Chart,
-  registerables,
-  Plugin,
-  ChartType,
-  ChartData,
-  ChartOptions,
-} from 'chart.js';
+import { Chart, registerables, Plugin, ChartType, ChartData, ChartOptions } from 'chart.js';
 
 type UpdateMode = 'resize' | 'reset' | 'default' | 'none' | 'hide' | 'show' | 'active';
 
-/* c8 ignore next */
 // registerables is undefined when using UMD
 // using chart.js via UMD already includes registerables
 if (registerables !== undefined) {
   Chart.register(...registerables);
 }
+/* c8 ignore stop */
 
 const props = withDefaults(defineProps<{
   type: ChartType;
@@ -42,8 +37,10 @@ const chartJsEventsPlugin = chartJsEventNames.reduce((reduced, eventType) => {
   return { ...reduced, ...generateChartJsEventListener(emit, event) };
 }, { id: 'Vue3ChartJsEventHookPlugin' } as Plugin);
 
-// annotated explicitly so the generated .d.ts references chart.js's public
-// type aliases instead of expanding them into internal (unexported) paths
+// annotated explicitly so the generated .d.ts references chart.js's public type
+// aliases instead of expanding them into internal (unexported) paths. Erased at
+// compile time; ignored so v8 does not misattribute a branch onto these lines.
+/* c8 ignore start */
 interface ChartJSState {
   chart: Chart | null;
   plugins: Plugin[];
@@ -56,6 +53,7 @@ interface ChartJSState {
     plugins: Plugin[];
   }>;
 }
+/* c8 ignore stop */
 
 const chartJSState: ChartJSState = {
   chart: null,

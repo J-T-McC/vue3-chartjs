@@ -4,9 +4,8 @@
 /* c8 ignore start */
 import { ref, onMounted, onBeforeUnmount, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
+import type { UpdateMode } from './includes';
 import { Chart, registerables, Plugin, ChartType, ChartData, ChartOptions } from 'chart.js';
-
-type UpdateMode = 'resize' | 'reset' | 'default' | 'none' | 'hide' | 'show' | 'active';
 
 // registerables is undefined when using UMD
 // using chart.js via UMD already includes registerables

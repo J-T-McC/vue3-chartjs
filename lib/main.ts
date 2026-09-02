@@ -15,4 +15,6 @@ Vue3ChartJs.install = (app: App, options: { plugins?: Plugin[] } = {}) => {
   }
 };
 
+export type { EventObject, UpdateMode } from './includes';
+
 export default Vue3ChartJs;

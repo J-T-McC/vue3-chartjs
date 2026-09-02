@@ -19,9 +19,11 @@ For ChartJS 3.1, see [v1.3.0](https://github.com/J-T-McC/vue3-chartjs/tree/v1.3.
 ## Installation
 
 ```shell script
-yarn add chart.js @j-t-mcc/vue3-chartjs
+pnpm add chart.js @j-t-mcc/vue3-chartjs
 
 npm install chart.js @j-t-mcc/vue3-chartjs
+
+yarn add chart.js @j-t-mcc/vue3-chartjs
 ```
 
 ## Configuration
@@ -447,9 +449,9 @@ export default {
 For a demo, Clone this repository and run:
 
 ```shell script
-yarn install
+pnpm install
 
-yarn dev
+pnpm dev
 ```
 
 ## License

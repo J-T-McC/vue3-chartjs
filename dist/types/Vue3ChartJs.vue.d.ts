@@ -1,5 +1,5 @@
+import type { UpdateMode } from './includes';
 import { Chart, Plugin, ChartType, ChartData, ChartOptions } from 'chart.js';
-type UpdateMode = 'resize' | 'reset' | 'default' | 'none' | 'hide' | 'show' | 'active';
 type __VLS_Props = {
     type: ChartType;
     height?: number;

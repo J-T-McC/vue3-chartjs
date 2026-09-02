@@ -85,10 +85,25 @@ canceled" by calling the preventDefault method on the event parameter available 
 This library only implements a few ChartJS methods for some common interactions and are available by reference:
 
 ```javascript
-chartRef.value.update(animationSpeed = 750)
+chartRef.value.update(mode = 'default')
 chartRef.value.resize()
 chartRef.value.destroy()
 ```
+
+`update()` takes a ChartJS transition mode: `'default'`, `'none'`, `'reset'`, `'resize'`, `'show'`, `'hide'` or
+`'active'`. Pass `'none'` to apply an update without animating it.
+
+> **Changed in v2.1.0:** `update()` previously accepted an animation duration in milliseconds. A number such as
+> `update(750)` is not a valid transition mode and is silently ignored. Set the duration through the `options` prop
+> instead:
+>
+> ```javascript
+> options: {
+>   animation: {
+>     duration: 750
+>   }
+> }
+> ```
 
 If you require additional access to ChartJS functionality, you can interact directly with the ChartJS object via the
 chartJSState attribute by reference:
@@ -234,7 +249,7 @@ export default {
         }
       ]
 
-      chartRef.value.update(250)
+      chartRef.value.update()
     }
 
     return {

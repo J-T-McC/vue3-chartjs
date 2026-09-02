@@ -39,6 +39,10 @@ const chartJsEventNames: string[] = [
   'afterEvent',
 ];
 
+/** Transition mode accepted by the exposed update() method. */
+type UpdateMode = 'resize' | 'reset' | 'default' | 'none' | 'hide' | 'show' | 'active';
+
+/** Payload passed to every emitted chart.js event. */
 interface EventObject {
   type: string;
   chartRef?: Ref<VNodeRef | null>;
@@ -75,4 +79,9 @@ export {
   chartJsEventNames,
   generateEventObject,
   generateChartJsEventListener,
+};
+
+export type {
+  EventObject,
+  UpdateMode,
 };

@@ -1,4 +1,4 @@
-import { defineComponent as m, ref as v, onMounted as w, onBeforeUnmount as y, openBlock as E, createElementBlock as P } from "vue";
+import { defineComponent as m, ref as v, onMounted as w, onBeforeUnmount as y, openBlock as P, createElementBlock as E } from "vue";
 import { registerables as d, Chart as i } from "chart.js";
 const p = [
   "install",
@@ -38,7 +38,7 @@ const p = [
   "beforeEvent",
   "afterEvent"
 ];
-function J(r, t) {
+function _(r, t) {
   return {
     type: r,
     chartRef: t,
@@ -51,12 +51,12 @@ function J(r, t) {
     _defaultPrevented: !1
   };
 }
-function U(r, t) {
+function J(r, t) {
   return {
-    [t.type]: () => (r(t.type, t), !t.isDefaultPrevented())
+    [t.type]: () => (t._defaultPrevented = !1, r(t.type, t), !t.isDefaultPrevented())
   };
 }
-const _ = ["height", "width"], a = /* @__PURE__ */ m({
+const U = ["height", "width"], a = /* @__PURE__ */ m({
   __name: "Vue3ChartJs",
   props: {
     type: {},
@@ -73,21 +73,21 @@ const _ = ["height", "width"], a = /* @__PURE__ */ m({
       chart: null,
       plugins: [
         p.reduce((n, c) => {
-          const b = J(c, o);
-          return { ...n, ...U(h, b) };
+          const b = _(c, o);
+          return { ...n, ...J(h, b) };
         }, { id: "Vue3ChartJsEventHookPlugin" }),
         ...f.plugins ?? []
       ],
       // reference props directly: spreading would snapshot them at setup()
       // and update()/render() would keep reapplying the mount-time values
       props: f
-    }, u = () => {
+    }, l = () => {
       e.chart && (e.chart.destroy(), e.chart = null);
     }, g = (n = "default") => {
       e.chart && (e.chart.data = { ...e.chart.data, ...e.props.data }, e.chart.options = { ...e.chart.options, ...e.props.options }, e.chart.update(n));
     }, D = () => {
       e.chart && e.chart.resize();
-    }, l = () => {
+    }, u = () => {
       if (e.chart)
         return e.chart.update();
       e.chart = new i(o.value.getContext("2d"), {
@@ -99,16 +99,16 @@ const _ = ["height", "width"], a = /* @__PURE__ */ m({
     };
     return t({
       chartJSState: e,
-      render: l,
-      destroy: u,
+      render: u,
+      destroy: l,
       update: g,
       resize: D
-    }), w(() => l()), y(() => u()), (n, c) => (E(), P("canvas", {
+    }), w(() => u()), y(() => l()), (n, c) => (P(), E("canvas", {
       ref_key: "chartRef",
       ref: o,
       height: r.height,
       width: r.width
-    }, null, 8, _));
+    }, null, 8, U));
   }
 });
 a.registerGlobalPlugins = (r) => {

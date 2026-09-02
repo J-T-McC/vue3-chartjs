@@ -68,14 +68,30 @@ describe('generateChartJsEventListener', () => {
   });
 
   it('should return false if the event is prevented', () => {
-    const mockEmit = jest.fn();
+    const mockEmit = jest.fn((_type: string, event: EventObject) => event.preventDefault());
     const event = generateEventObject('testEvent');
-    event.preventDefault();
     const listener = generateChartJsEventListener(mockEmit, event);
 
     const result = listener['testEvent']();
 
     expect(result).toBe(false);
+  });
+
+  it('re-evaluates cancellation on every invocation', () => {
+    let invocations = 0;
+    const mockEmit = jest.fn((_type: string, event: EventObject) => {
+      invocations += 1;
+      // only the first invocation cancels
+      if (invocations === 1) {
+        event.preventDefault();
+      }
+    });
+    const event = generateEventObject('testEvent');
+    const listener = generateChartJsEventListener(mockEmit, event);
+
+    expect(listener['testEvent']()).toBe(false);
+    expect(listener['testEvent']()).toBe(true);
+    expect(listener['testEvent']()).toBe(true);
   });
 });
 
@@ -208,17 +224,21 @@ describe('component methods', () => {
   it('implements prevent default for emitted chart.js hooks', () => {
     let invoked = 0;
 
-    const mockEmit = (e: string) => {
+    const allow = () => {
       invoked++;
     };
 
+    const cancel = (_type: string, event: EventObject) => {
+      invoked++;
+      event.preventDefault();
+    };
+
     const eventAllowed = generateEventObject('test');
-    const pluginEventAllowed = generateChartJsEventListener(mockEmit, eventAllowed);
+    const pluginEventAllowed = generateChartJsEventListener(allow, eventAllowed);
     expect(pluginEventAllowed['test']()).toBeTruthy();
 
     const eventPrevented = generateEventObject('test');
-    eventPrevented.preventDefault();
-    const pluginEventPrevented = generateChartJsEventListener(mockEmit, eventPrevented);
+    const pluginEventPrevented = generateChartJsEventListener(cancel, eventPrevented);
     expect(pluginEventPrevented['test']()).toBeFalsy();
     expect(invoked).toEqual(2);
   });
@@ -333,5 +353,28 @@ describe('event cancellation', () => {
     // chart.js abandons the update, so the matching after hook never runs
     expect(cancelled.emitted('beforeUpdate')).toHaveLength(1);
     expect(cancelled.emitted('afterUpdate')).toBeUndefined();
+  });
+
+  it('stops cancelling once the handler no longer calls preventDefault', () => {
+    let calls = 0;
+    const wrapper = factory({
+      ...getDoughnutProps(),
+      onBeforeUpdate: (event: EventObject) => {
+        calls += 1;
+        // mirrors a reactive guard such as `if (isLoading.value)`
+        if (calls === 1) {
+          event.preventDefault();
+        }
+      },
+    });
+    const ref = wrapper.vm as any;
+
+    ref.update();
+    ref.update();
+    ref.update();
+
+    expect(calls).toEqual(3);
+    // first update cancelled, the other two ran to completion
+    expect(wrapper.emitted('afterUpdate')).toHaveLength(2);
   });
 });

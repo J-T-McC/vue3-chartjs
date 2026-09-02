@@ -68,6 +68,11 @@ function generateEventObject(type: string, chartRef?: Ref<VNodeRef | null>): Eve
 function generateChartJsEventListener(emit: EmitFn, event: EventObject) {
   return {
     [event.type]: () => {
+      // one event object is shared by every emission of this hook, so the flag
+      // has to be cleared first: otherwise a single preventDefault() would keep
+      // cancelling for the lifetime of the chart
+      event._defaultPrevented = false;
+
       emit(event.type, event);
 
       // chart.js cancels a cancellable hook when it returns false

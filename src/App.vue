@@ -105,6 +105,20 @@
         <p v-else class="destroyed">chart destroyed — press <code>destroy() + render()</code></p>
       </div>
 
+      <details open class="copy-panel">
+        <summary>copy this chart</summary>
+        <div class="row wrap">
+          <button type="button" :class="{ active: snippet === 'config' }" @click="snippet = 'config'">
+            config object
+          </button>
+          <button type="button" :class="{ active: snippet === 'component' }" @click="snippet = 'component'">
+            Vue component
+          </button>
+          <button type="button" class="primary" @click="copySnippet">{{ copyLabel }}</button>
+        </div>
+        <textarea ref="snippetRef" class="snippet" readonly rows="16" :value="snippetText"></textarea>
+      </details>
+
       <details open>
         <summary>emitted events <span class="count">{{ events.length }}</span></summary>
         <ol class="events">
@@ -236,6 +250,58 @@ const remount = async () => {
   alive.value = true
 }
 
+
+const snippet = ref('config')
+const snippetRef = ref(null)
+const copied = ref(false)
+const copyLabel = computed(() => (copied.value ? 'copied' : 'copy'))
+
+/** JSON reshaped to read like the JS object you would paste: bare keys and
+ *  single-quoted strings, leaving anything containing a quote or escape alone. */
+const toJs = (value, indent = 0) =>
+  JSON.stringify(value, null, 2)
+    .replace(/"([A-Za-z_$][A-Za-z0-9_$]*)":/g, '$1:')
+    .replace(/"([^"\\']*)"/g, "'$1'")
+    .split('\n')
+    .join('\n' + ' '.repeat(indent))
+
+const chartLiteral = computed(() => {
+  const { type, data, options, height, width } = applied.value
+  const parts = [`  type: '${type}',`]
+  if (height) parts.push(`  height: ${height},`)
+  if (width) parts.push(`  width: ${width},`)
+  parts.push(`  data: ${toJs(data, 2)},`)
+  parts.push(`  options: ${toJs(options, 2)}`)
+  return `{\n${parts.join('\n')}\n}`
+})
+
+const snippetText = computed(() =>
+  snippet.value === 'config'
+    ? `const chart = ${chartLiteral.value}`
+    : `<template>
+  <div style="height:600px;width:600px;">
+    <vue3-chart-js v-bind="chart" />
+  </div>
+</template>
+
+<script setup>
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+
+const chart = ${chartLiteral.value}
+<\/script>`
+)
+
+const copySnippet = async () => {
+  try {
+    await navigator.clipboard.writeText(snippetText.value)
+  } catch {
+    // clipboard is unavailable outside a secure context; select it instead
+    snippetRef.value?.select()
+    document.execCommand?.('copy')
+  }
+  copied.value = true
+  setTimeout(() => { copied.value = false }, 1500)
+}
 
 const resize = () => chartRef.value?.resize()
 
@@ -375,5 +441,8 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .
 details { margin-top: 1rem; border: 1px solid var(--line); border-radius: 6px; padding: .5rem .75rem; }
 summary { cursor: pointer; color: var(--muted); }
 .count { color: var(--fg); font-weight: 600; }
+.snippet { margin-top: .5rem; background: var(--panel); }
+.copy-panel summary { color: var(--fg); font-weight: 600; }
+
 .events { max-height: 200px; overflow: auto; margin: .5rem 0 0; padding-left: 1.5rem; font-size: .85rem; }
 </style>

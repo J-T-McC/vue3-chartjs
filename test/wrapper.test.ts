@@ -4,6 +4,7 @@ import { Chart } from 'chart.js';
 import { createApp, ref } from 'vue';
 import { getDoughnutProps } from './chart.props';
 import { generateEventObject, generateChartJsEventListener } from '../lib/includes';
+import type { EventObject } from '../lib/includes';
 
 const Vue3ChartJsPlugin = Vue3ChartJs as any;
 
@@ -34,14 +35,14 @@ describe('generateEventObject', () => {
   it('should return false from isDefaultPrevented when _defaultPrevented is false', () => {
     const eventObject = generateEventObject('testEvent');
 
-    expect(eventObject.isDefaultPrevented()).toBe(true);
+    expect(eventObject.isDefaultPrevented()).toBe(false);
   });
 
   it('should return true from isDefaultPrevented when _defaultPrevented is true', () => {
     const eventObject = generateEventObject('testEvent');
     eventObject.preventDefault();
 
-    expect(eventObject.isDefaultPrevented()).toBe(false);
+    expect(eventObject.isDefaultPrevented()).toBe(true);
   });
 });
 
@@ -312,5 +313,25 @@ describe('lifecycle cleanup', () => {
 
     expect(() => wrapper.unmount()).not.toThrow();
     expect(ref.chartJSState.chart).toBeNull();
+  });
+});
+
+describe('event cancellation', () => {
+  it('cancels a cancellable chart.js hook when preventDefault is called', () => {
+    const proceeded = factory(getDoughnutProps());
+    (proceeded.vm as any).update();
+
+    expect(proceeded.emitted('beforeUpdate')).toHaveLength(1);
+    expect(proceeded.emitted('afterUpdate')).toHaveLength(1);
+
+    const cancelled = factory({
+      ...getDoughnutProps(),
+      onBeforeUpdate: (event: EventObject) => event.preventDefault(),
+    });
+    (cancelled.vm as any).update();
+
+    // chart.js abandons the update, so the matching after hook never runs
+    expect(cancelled.emitted('beforeUpdate')).toHaveLength(1);
+    expect(cancelled.emitted('afterUpdate')).toBeUndefined();
   });
 });

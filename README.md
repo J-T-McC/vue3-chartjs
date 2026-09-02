@@ -82,6 +82,9 @@ A default event hook plugin is injected into each chart object and emits the fol
 Event listeners are converted to camelcase in Vue 3. Events marked as "cancellable" in the ChartJS documentation can be "
 canceled" by calling the preventDefault method on the event parameter available in your event function.
 
+`isDefaultPrevented()` reports whether the event has been canceled, returning `true` once `preventDefault()` has been
+called. The event parameter is typed as `EventObject`, exported from the package.
+
 ## Methods
 
 This library only implements a few ChartJS methods for some common interactions and are available by reference:

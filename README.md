@@ -83,7 +83,20 @@ Event listeners are converted to camelcase in Vue 3. Events marked as "cancellab
 canceled" by calling the preventDefault method on the event parameter available in your event function.
 
 `isDefaultPrevented()` reports whether the event has been canceled, returning `true` once `preventDefault()` has been
-called. The event parameter is typed as `EventObject`, exported from the package.
+called. Cancellation applies to a single emission — the handler is consulted again on the next one, so a conditional
+guard resumes normally once its condition clears:
+
+```js
+const onBeforeUpdate = (event) => {
+  // updates are skipped while loading, and resume by themselves afterwards
+  if (isLoading.value) {
+    event.preventDefault()
+  }
+}
+```
+
+To suppress a hook for the lifetime of the chart, call `preventDefault()` unconditionally. The event parameter is typed
+as `EventObject`, exported from the package.
 
 ## Methods
 

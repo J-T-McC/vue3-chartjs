@@ -15,38 +15,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # version comes from the packageManager field in package.json
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: pnpm
 
       - name: Install
-        run: npm install --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       # dist/ is committed, so a source change without a rebuild ships a stale
       # bundle and stale type declarations to consumers
       - name: Verify committed dist matches the build
         run: |
           if [ -n "$(git status --porcelain -- dist/)" ]; then
-            echo "::error::dist/ is out of date. Run 'npm run build' and commit the result."
+            echo "::error::dist/ is out of date. Run 'pnpm run build' and commit the result."
             git status --porcelain -- dist/
             git diff -- dist/
             exit 1
           fi
 
       - name: Upload coverage to Coveralls
-        run: cat ./coverage/lcov.info | npx coveralls
+        run: cat ./coverage/lcov.info | pnpm dlx coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

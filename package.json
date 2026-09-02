@@ -4,6 +4,7 @@
   "author": "Tyson McCarney <info@tysonmccarney.com> (https://tysonmccarney.com)",
   "description": "Vue3 wrapper for Chart.js",
   "license": "MIT",
+  "packageManager": "pnpm@10.19.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/J-T-McC/vue3-chartjs"
@@ -66,6 +67,11 @@
     "vite-plugin-dts": "^4.5.0",
     "vue": "^3.5.13",
     "vue-tsc": "^2.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "babel": {
     "presets": [

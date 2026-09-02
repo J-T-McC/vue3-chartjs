@@ -241,3 +241,52 @@ describe('emitted events', () => {
     expect(wrapper.emitted('stop')).toHaveLength(1);
   });
 });
+
+describe('reactive props', () => {
+  it('picks up a replaced data prop on update', async () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+
+    await wrapper.setProps({
+      data: {
+        labels: ['Cats', 'Dogs', 'Hamsters', 'Dragons'],
+        datasets: [
+          {
+            backgroundColor: ['#333333', '#E46651', '#00D8FF', '#DD1B16'],
+            data: [1, 2, 3, 4]
+          }
+        ]
+      }
+    });
+    ref.update();
+
+    expect(ref.chartJSState.chart.data.datasets[0].data).toEqual([1, 2, 3, 4]);
+    expect(ref.chartJSState.chart.data.labels).toEqual(['Cats', 'Dogs', 'Hamsters', 'Dragons']);
+  });
+
+  it('picks up a replaced options prop on update', async () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+
+    await wrapper.setProps({
+      options: {
+        responsive: true,
+        plugins: { title: { display: true, text: 'Replaced' } }
+      }
+    });
+    ref.update();
+
+    expect(ref.chartJSState.chart.options.plugins.title.text).toEqual('Replaced');
+  });
+
+  it('renders a replaced type prop after destroy', async () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+
+    ref.destroy();
+    await wrapper.setProps({ type: 'pie' });
+    ref.render();
+
+    expect(ref.chartJSState.chart.config.type).toEqual('pie');
+  });
+});

@@ -46,7 +46,9 @@ const chartJSState = {
     chartJsEventsPlugin,
     ...(props.plugins ?? [])
   ],
-  props: { ...props }
+  // reference props directly: spreading would snapshot them at setup()
+  // and update()/render() would keep reapplying the mount-time values
+  props
 };
 
 const destroy = () => {

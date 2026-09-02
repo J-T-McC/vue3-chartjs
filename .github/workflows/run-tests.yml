@@ -4,7 +4,9 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ '*' ]
+    # '*' does not match branch names containing '/', which silently skips
+    # every pull request targeting one
+    branches: [ '**' ]
 
 jobs:
   test:

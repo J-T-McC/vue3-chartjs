@@ -2,12 +2,14 @@
 /* c8 ignore next */
 import { ref, onMounted, onBeforeUnmount, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
-import { Chart, registerables, Plugin } from 'chart.js';
 import {
+  Chart,
+  registerables,
+  Plugin,
   ChartType,
   ChartData,
   ChartOptions,
-} from 'chart.js/dist/types';
+} from 'chart.js';
 
 type UpdateMode = 'resize' | 'reset' | 'default' | 'none' | 'hide' | 'show' | 'active';
 
@@ -40,8 +42,23 @@ const chartJsEventsPlugin = chartJsEventNames.reduce((reduced, eventType) => {
   return { ...reduced, ...generateChartJsEventListener(emit, event) };
 }, { id: 'Vue3ChartJsEventHookPlugin' } as Plugin);
 
-const chartJSState = {
-  chart: null as Chart | null,
+// annotated explicitly so the generated .d.ts references chart.js's public
+// type aliases instead of expanding them into internal (unexported) paths
+interface ChartJSState {
+  chart: Chart | null;
+  plugins: Plugin[];
+  props: Readonly<{
+    type: ChartType;
+    height?: number;
+    width?: number;
+    data: ChartData;
+    options: ChartOptions;
+    plugins: Plugin[];
+  }>;
+}
+
+const chartJSState: ChartJSState = {
+  chart: null,
   plugins: [
     chartJsEventsPlugin,
     ...(props.plugins ?? [])

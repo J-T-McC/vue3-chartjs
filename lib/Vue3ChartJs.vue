@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 /* c8 ignore next */
-import { ref, onMounted, VNodeRef } from 'vue';
+import { ref, onMounted, onBeforeUnmount, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
 import { Chart, registerables, Plugin } from 'chart.js';
 import {
@@ -46,7 +46,9 @@ const chartJSState = {
     chartJsEventsPlugin,
     ...(props.plugins ?? [])
   ],
-  props: { ...props }
+  // reference props directly: spreading would snapshot them at setup()
+  // and update()/render() would keep reapplying the mount-time values
+  props
 };
 
 const destroy = () => {
@@ -92,6 +94,8 @@ defineExpose({
 });
 
 onMounted(() => render());
+
+onBeforeUnmount(() => destroy());
 </script>
 
 <template>

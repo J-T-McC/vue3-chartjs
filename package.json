@@ -23,6 +23,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/vue3-chartjs.es.js",
       "require": "./dist/vue3-chartjs.umd.js"
     }

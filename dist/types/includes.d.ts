@@ -9,7 +9,7 @@ interface EventObject {
 }
 declare function generateEventObject(type: string, chartRef?: Ref<VNodeRef | null>): EventObject;
 declare function generateChartJsEventListener(emit: EmitFn, event: EventObject): {
-    [x: string]: () => boolean;
+    [event.type]: () => boolean;
 };
 export { chartJsEventNames, generateEventObject, generateChartJsEventListener, };
 //# sourceMappingURL=includes.d.ts.map

@@ -42,9 +42,12 @@
           <label>height <input v-model.number="draft.height" type="number" min="0" placeholder="auto" /></label>
           <label>width <input v-model.number="draft.width" type="number" min="0" placeholder="auto" /></label>
         </div>
-        <small>
-          Only applied when <code>options.responsive</code> is <code>false</code>, and only on a re-create —
-          chart.js sizes the canvas when the instance is built.
+        <small v-if="sizeIgnored" class="warn">
+          Ignored while <code>options.responsive</code> is not <code>false</code> — chart.js sizes the canvas
+          from its container.
+        </small>
+        <small v-else>
+          Applied on a re-create only; chart.js sizes the canvas when the instance is built.
         </small>
       </fieldset>
 
@@ -72,7 +75,7 @@
 
       <div class="row wrap actions">
         <button type="button" class="primary" @click="applyUpdate">update()</button>
-        <button type="button" @click="recreate">destroy() + render()</button>
+        <button type="button" @click="applyRecreate">destroy() + render()</button>
         <button type="button" @click="resize">resize()</button>
         <button type="button" @click="exportPng">export PNG</button>
         <button type="button" class="ghost" @click="loadPreset(activePreset)">reset</button>
@@ -133,6 +136,15 @@ const needsRecreate = computed(() =>
   (draft.width || undefined) !== applied.value.width
 )
 
+const sizeIgnored = computed(() => {
+  if (!draft.height && !draft.width) return false
+  try {
+    return JSON.parse(draft.options).responsive !== false
+  } catch {
+    return false
+  }
+})
+
 const frameStyle = computed(() =>
   applied.value.options && applied.value.options.responsive === false
     ? { display: 'inline-block', height: 'auto' }
@@ -177,14 +189,20 @@ const loadPreset = (name) => {
   recreate()
 }
 
-const applyUpdate = async () => {
+/** Applies the editors to the chart. Returns false when the JSON is invalid. */
+const applyDraft = () => {
   const parsed = readDraft()
-  if (!parsed) return
+  if (!parsed) return false
+  commit(parsed)
+  return true
+}
+
+const applyUpdate = async () => {
 
   // update() only re-reads data and options. type, height and width are baked
   // into the chart when it is constructed, so they need a fresh instance.
   const mustRecreate = needsRecreate.value
-  commit(parsed)
+  if (!applyDraft()) return
   await nextTick()
 
   if (mustRecreate) {
@@ -193,6 +211,13 @@ const applyUpdate = async () => {
   }
 
   chartRef.value?.update(mode.value)
+}
+
+/** Button handler: apply pending edits, then rebuild from scratch. */
+const applyRecreate = async () => {
+  if (!applyDraft()) return
+  await nextTick()
+  await recreate()
 }
 
 const recreate = async () => {

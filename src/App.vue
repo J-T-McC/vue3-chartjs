@@ -30,8 +30,8 @@
           <select v-model="draft.type">
             <option v-for="name in Object.keys(presets)" :key="name" :value="name">{{ name }}</option>
           </select>
-          <small v-if="draft.type !== applied.type" class="warn">
-            needs destroy() + render()
+          <small v-if="draft.type !== applied.type">
+            applied on update() — the component rebuilds itself
           </small>
         </div>
       </fieldset>
@@ -46,11 +46,8 @@
           Ignored while <code>options.responsive</code> is not <code>false</code> — chart.js sizes the canvas
           from its container.
         </small>
-        <small v-else-if="sizeChanged" class="warn">
-          needs a re-mount — chart.js restores the canvas on destroy(), so destroy() + render() keeps the old size
-        </small>
         <small v-else>
-          Applied when the canvas is mounted, and only with <code>responsive: false</code>.
+          Only has an effect with <code>responsive: false</code>. The component remounts the canvas for you.
         </small>
       </fieldset>
 
@@ -222,22 +219,19 @@ const applyUpdate = async () => {
 
   chartRef.value?.update(mode.value)
 
-  // deliberately not rebuilt here: watching update() ignore these is the point
+  // type, height and width are picked up by the component's own watcher
   if (typePending || sizePending) {
-    const needs = [typePending && 'type', sizePending && 'height/width'].filter(Boolean).join(' and ')
-    error.value = `update() re-reads data and options only — ${needs} did not change`
+    const rebuilt = [typePending && 'type', sizePending && 'height/width'].filter(Boolean).join(' and ')
+    error.value = `${rebuilt} changed — the component rebuilt the chart automatically`
   }
 }
 
-/** The two library calls, on the same canvas. Picks up type, but not size. */
+/** The two library calls, run explicitly rather than through the watcher. */
 const applyDestroyRender = async () => {
   if (!applyDraft()) return
   await nextTick()
   chartRef.value?.destroy()
   chartRef.value?.render()
-  if (sizeChanged.value) {
-    error.value = 'height/width still unchanged — chart.js restored the canvas on destroy()'
-  }
 }
 
 /** Mounts a fresh canvas, which is the only way height and width take effect. */

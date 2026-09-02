@@ -378,3 +378,45 @@ describe('event cancellation', () => {
     expect(wrapper.emitted('afterUpdate')).toHaveLength(2);
   });
 });
+
+describe('update() and the chart.js options proxy', () => {
+  // chart.js resolves options behind a proxy whose get handler assumes string
+  // keys. Reading a symbol off it throws, so update() must assign rather than
+  // copy. jsdom charts never reach that state, so the proxy is simulated here.
+  const resolvedOptionsProxy = (onSymbolRead: () => void) => {
+    const cacheMarker = Symbol('cachedOptions');
+    return new Proxy({ responsive: true } as Record<string, unknown>, {
+      get (target, key) {
+        if (typeof key !== 'string') {
+          onSymbolRead();
+          throw new TypeError('name.startsWith is not a function');
+        }
+        return target[key as string];
+      },
+      ownKeys: (target) => [...Reflect.ownKeys(target), cacheMarker],
+      getOwnPropertyDescriptor: () => ({ configurable: true, enumerable: true, value: 1 }),
+    });
+  };
+
+  it('assigns options instead of copying them', () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+
+    let symbolWasRead = false;
+    let assigned: unknown;
+    Object.defineProperty(ref.chartJSState.chart, 'options', {
+      get: () => resolvedOptionsProxy(() => { symbolWasRead = true; }),
+      set: (value) => { assigned = value; },
+      configurable: true,
+    });
+
+    try {
+      ref.update();
+    } catch {
+      // chart.js internals fail against the stand-in proxy; only the read matters
+    }
+
+    expect(symbolWasRead).toBe(false);
+    expect(assigned).toBe(ref.chartJSState.props.options);
+  });
+});

@@ -74,8 +74,8 @@ const destroy = () => {
 
 const update = (mode: UpdateMode = 'default') => {
   if (chartJSState.chart) {
-    chartJSState.chart.data = { ...chartJSState.chart.data, ...chartJSState.props.data };
-    chartJSState.chart.options = { ...chartJSState.chart.options, ...chartJSState.props.options };
+    chartJSState.chart.data = chartJSState.props.data;
+    chartJSState.chart.options = chartJSState.props.options;
     chartJSState.chart.update(mode);
   }
 };

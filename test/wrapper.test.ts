@@ -290,3 +290,27 @@ describe('reactive props', () => {
     expect(ref.chartJSState.chart.config.type).toEqual('pie');
   });
 });
+
+describe('lifecycle cleanup', () => {
+  it('destroys the chart when the component unmounts', () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+    expect(ref.chartJSState.chart).toBeTruthy();
+
+    wrapper.unmount();
+
+    expect(ref.chartJSState.chart).toBeNull();
+  });
+
+  it('unmounting after a manual destroy is a no-op', () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+
+    ref.destroy();
+    expect(ref.chartJSState.chart).toBeNull();
+    expect(wrapper.emitted('uninstall')).toHaveLength(1);
+
+    expect(() => wrapper.unmount()).not.toThrow();
+    expect(ref.chartJSState.chart).toBeNull();
+  });
+});

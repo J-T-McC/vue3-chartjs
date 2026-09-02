@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 /* c8 ignore next */
-import { ref, onMounted, VNodeRef } from 'vue';
+import { ref, onMounted, onBeforeUnmount, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
 import { Chart, registerables, Plugin } from 'chart.js';
 import {
@@ -94,6 +94,8 @@ defineExpose({
 });
 
 onMounted(() => render());
+
+onBeforeUnmount(() => destroy());
 </script>
 
 <template>

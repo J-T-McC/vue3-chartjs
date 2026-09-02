@@ -1,6 +1,6 @@
-import { defineComponent as m, ref as v, onMounted as w, onBeforeUnmount as y, openBlock as P, createElementBlock as E } from "vue";
-import { registerables as d, Chart as i } from "chart.js";
-const p = [
+import { defineComponent as y, ref as p, watch as P, nextTick as E, onMounted as T, onBeforeUnmount as _, openBlock as k, createElementBlock as J } from "vue";
+import { registerables as g, Chart as c } from "chart.js";
+const D = [
   "install",
   "uninstall",
   "beforeInit",
@@ -38,7 +38,7 @@ const p = [
   "beforeEvent",
   "afterEvent"
 ];
-function _(r, t) {
+function U(r, t) {
   return {
     type: r,
     chartRef: t,
@@ -51,12 +51,12 @@ function _(r, t) {
     _defaultPrevented: !1
   };
 }
-function J(r, t) {
+function C(r, t) {
   return {
     [t.type]: () => (t._defaultPrevented = !1, r(t.type, t), !t.isDefaultPrevented())
   };
 }
-const U = ["height", "width"], a = /* @__PURE__ */ m({
+const x = ["height", "width"], s = /* @__PURE__ */ y({
   __name: "Vue3ChartJs",
   props: {
     type: {},
@@ -66,58 +66,70 @@ const U = ["height", "width"], a = /* @__PURE__ */ m({
     options: { default: () => ({}) },
     plugins: { default: () => [] }
   },
-  emits: p,
-  setup(r, { expose: t, emit: s }) {
-    d !== void 0 && i.register(...d);
-    const f = r, h = s, o = v(null), e = {
+  emits: D,
+  setup(r, { expose: t, emit: n }) {
+    g !== void 0 && c.register(...g);
+    const a = r, m = n, o = p(null), d = p(0), e = {
       chart: null,
       plugins: [
-        p.reduce((n, c) => {
-          const b = _(c, o);
-          return { ...n, ...J(h, b) };
+        D.reduce((i, h) => {
+          const w = U(h, o);
+          return { ...i, ...C(m, w) };
         }, { id: "Vue3ChartJsEventHookPlugin" }),
-        ...f.plugins ?? []
+        ...a.plugins ?? []
       ],
       // reference props directly: spreading would snapshot them at setup()
       // and update()/render() would keep reapplying the mount-time values
-      props: f
-    }, l = () => {
+      props: a
+    }, f = () => {
       e.chart && (e.chart.destroy(), e.chart = null);
-    }, g = (n = "default") => {
-      e.chart && (e.chart.data = e.props.data, e.chart.options = { ...e.props.options }, e.chart.update(n));
-    }, D = () => {
+    }, b = (i = "default") => {
+      e.chart && (e.chart.data = e.props.data, e.chart.options = { ...e.props.options }, e.chart.update(i));
+    }, v = () => {
       e.chart && e.chart.resize();
-    }, u = () => {
+    }, l = () => {
       if (e.chart)
         return e.chart.update();
-      e.chart = new i(o.value.getContext("2d"), {
+      e.chart = new c(o.value.getContext("2d"), {
         type: e.props.type,
         data: e.props.data,
         options: { ...e.props.options },
         plugins: e.plugins
       });
     };
-    return t({
+    t({
       chartJSState: e,
-      render: u,
-      destroy: l,
-      update: g,
-      resize: D
-    }), w(() => u()), y(() => l()), (n, c) => (P(), E("canvas", {
+      render: l,
+      destroy: f,
+      update: b,
+      resize: v
+    });
+    let u;
+    return P(
+      () => [a.type, a.height, a.width],
+      () => {
+        clearTimeout(u), u = setTimeout(() => {
+          f(), d.value += 1, E(l);
+        }, 0);
+      }
+    ), T(() => l()), _(() => {
+      clearTimeout(u), f();
+    }), (i, h) => (k(), J("canvas", {
+      key: d.value,
       ref_key: "chartRef",
       ref: o,
       height: r.height,
       width: r.width
-    }, null, 8, U));
+    }, null, 8, x));
   }
 });
-a.registerGlobalPlugins = (r) => {
-  i.register(...r);
+s.registerGlobalPlugins = (r) => {
+  c.register(...r);
 };
-a.install = (r, t = {}) => {
-  var s;
-  r.component(a.name ?? "Vue3ChartJs", a), (s = t == null ? void 0 : t.plugins) != null && s.length && a.registerGlobalPlugins(t.plugins);
+s.install = (r, t = {}) => {
+  var n;
+  r.component(s.name ?? "Vue3ChartJs", s), (n = t == null ? void 0 : t.plugins) != null && n.length && s.registerGlobalPlugins(t.plugins);
 };
 export {
-  a as default
+  s as default
 };

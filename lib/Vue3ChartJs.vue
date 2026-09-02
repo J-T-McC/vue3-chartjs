@@ -2,7 +2,7 @@
 // imports and type aliases are erased at compile time, and the UMD guard below
 // has no reachable false branch under jest, so v8 has nothing to attribute here
 /* c8 ignore start */
-import { ref, onMounted, onBeforeUnmount, VNodeRef } from 'vue';
+import { ref, watch, nextTick, onMounted, onBeforeUnmount, VNodeRef } from 'vue';
 import { chartJsEventNames, generateEventObject, generateChartJsEventListener } from './includes';
 import type { UpdateMode } from './includes';
 import { Chart, registerables, Plugin, ChartType, ChartData, ChartOptions } from 'chart.js';
@@ -29,6 +29,11 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(chartJsEventNames);
 
 const chartRef = ref<VNodeRef | null>(null);
+
+// bumping this mounts a fresh canvas. chart.js restores a canvas to its
+// original dimensions when the chart is destroyed, and Vue will not re-apply
+// attributes it believes unchanged, so reusing the element keeps the old size.
+const canvasKey = ref(0);
 
 // generate chart.js plugin to emit lib events
 const chartJsEventsPlugin = chartJsEventNames.reduce((reduced, eventType) => {
@@ -109,11 +114,32 @@ defineExpose({
   resize,
 });
 
+// type, height and width are fixed when the chart is constructed, so a change
+// needs a new instance. They are safe to watch: chart.js never writes to them,
+// unlike data, whose datasets it decorates with resolved colours.
+let rebuildTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch(
+  () => [props.type, props.height, props.width],
+  () => {
+    // coalesce a burst of changes into a single rebuild
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(() => {
+      destroy();
+      canvasKey.value += 1;
+      nextTick(render);
+    }, 0);
+  }
+);
+
 onMounted(() => render());
 
-onBeforeUnmount(() => destroy());
+onBeforeUnmount(() => {
+  clearTimeout(rebuildTimer);
+  destroy();
+});
 </script>
 
 <template>
-  <canvas ref="chartRef" :height="height" :width="width"></canvas>
+  <canvas :key="canvasKey" ref="chartRef" :height="height" :width="width"></canvas>
 </template>

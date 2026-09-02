@@ -30,8 +30,8 @@
           <select v-model="draft.type">
             <option v-for="name in Object.keys(presets)" :key="name" :value="name">{{ name }}</option>
           </select>
-          <small v-if="needsRecreate" class="warn">
-            needs a re-create, not an update
+          <small v-if="draft.type !== applied.type" class="warn">
+            needs destroy() + render()
           </small>
         </div>
       </fieldset>
@@ -46,8 +46,11 @@
           Ignored while <code>options.responsive</code> is not <code>false</code> — chart.js sizes the canvas
           from its container.
         </small>
+        <small v-else-if="sizeChanged" class="warn">
+          needs a re-mount — chart.js restores the canvas on destroy(), so destroy() + render() keeps the old size
+        </small>
         <small v-else>
-          Applied on a re-create only; chart.js sizes the canvas when the instance is built.
+          Applied when the canvas is mounted, and only with <code>responsive: false</code>.
         </small>
       </fieldset>
 
@@ -75,7 +78,8 @@
 
       <div class="row wrap actions">
         <button type="button" class="primary" @click="applyUpdate">update()</button>
-        <button type="button" @click="applyRecreate">destroy() + render()</button>
+        <button type="button" @click="applyDestroyRender">destroy() + render()</button>
+        <button type="button" @click="remount">re-mount</button>
         <button type="button" @click="resize">resize()</button>
         <button type="button" @click="exportPng">export PNG</button>
         <button type="button" class="ghost" @click="loadPreset(activePreset)">reset</button>
@@ -130,8 +134,7 @@ const draft = reactive({ type: '', height: null, width: null, data: '', options:
 // deep-proxying large datasets buys nothing here.
 const applied = shallowRef({ type: '', height: undefined, width: undefined, data: {}, options: {} })
 
-const needsRecreate = computed(() =>
-  draft.type !== applied.value.type ||
+const sizeChanged = computed(() =>
   (draft.height || undefined) !== applied.value.height ||
   (draft.width || undefined) !== applied.value.width
 )
@@ -186,7 +189,7 @@ const loadPreset = (name) => {
   draft.data = JSON.stringify(preset.data, null, 2)
   draft.options = JSON.stringify(preset.options, null, 2)
   commit({ data: preset.data, options: preset.options })
-  recreate()
+  remount()
 }
 
 /** Applies the editors to the chart. Returns false when the JSON is invalid. */
@@ -198,35 +201,41 @@ const applyDraft = () => {
 }
 
 const applyUpdate = async () => {
-
-  // update() only re-reads data and options. type, height and width are baked
-  // into the chart when it is constructed, so they need a fresh instance.
-  const mustRecreate = needsRecreate.value
+  const typePending = draft.type !== applied.value.type
+  const sizePending = sizeChanged.value
   if (!applyDraft()) return
   await nextTick()
-
-  if (mustRecreate) {
-    error.value = 're-created the chart — update() cannot change type, height or width'
-    return recreate()
-  }
 
   chartRef.value?.update(mode.value)
+
+  // deliberately not rebuilt here: watching update() ignore these is the point
+  if (typePending || sizePending) {
+    const needs = [typePending && 'type', sizePending && 'height/width'].filter(Boolean).join(' and ')
+    error.value = `update() re-reads data and options only — ${needs} did not change`
+  }
 }
 
-/** Button handler: apply pending edits, then rebuild from scratch. */
-const applyRecreate = async () => {
+/** The two library calls, on the same canvas. Picks up type, but not size. */
+const applyDestroyRender = async () => {
   if (!applyDraft()) return
   await nextTick()
-  await recreate()
+  chartRef.value?.destroy()
+  chartRef.value?.render()
+  if (sizeChanged.value) {
+    error.value = 'height/width still unchanged — chart.js restored the canvas on destroy()'
+  }
 }
 
-const recreate = async () => {
+/** Mounts a fresh canvas, which is the only way height and width take effect. */
+const remount = async () => {
+  if (!applyDraft()) return
   chartRef.value?.destroy()
   alive.value = false
   instanceKey.value += 1
   await nextTick()
   alive.value = true
 }
+
 
 const resize = () => chartRef.value?.resize()
 

@@ -50,30 +50,20 @@ work as you would expect.
 > **The chart does not re-render on its own when a prop changes.** Change the data or options, then call `update()` on
 > the component reference. See [Updating a chart](#updating-a-chart).
 
-`update()` re-reads `data` and `options` only. The other props are fixed when the ChartJS instance is built.
+`data` and `options` are read when you call `update()`.
 
-To switch `type`, rebuild the instance:
+`type`, `height` and `width` are fixed when the ChartJS instance is built, so the component watches them and rebuilds
+the chart itself when they change. Nothing extra to call:
 
 ```javascript
-chartRef.value.destroy()
-chartRef.value.render()
+// the chart rebuilds on its own
+chartType.value = 'bar'
 ```
 
-`height` and `width` need a step further. ChartJS restores the canvas to its original dimensions when the chart is
-destroyed, and Vue does not re-apply the attributes because its own state has not changed — so a destroy and render
-pair silently keeps the old size. Give the component a `key` that changes with the size, so Vue mounts a fresh canvas:
+Rebuilds are debounced, so changing `height` and `width` together rebuilds once.
 
-```vue
-<vue3-chart-js
-    :key="`${size.width}x${size.height}`"
-    :height="size.height"
-    :width="size.width"
-    v-bind="chart"
-/>
-```
-
-`resize()` is not a substitute for any of this — it measures the canvas's container and writes that size back, which
-discards the `height` and `width` you set.
+`data` is deliberately not watched. ChartJS writes resolved colours back onto the datasets it is given, so a deep
+watcher would be re-triggered by the update it caused. Call `update()` after changing data.
 
 ## Sandbox Examples
 

@@ -129,7 +129,7 @@ const updateChart = () => {
     }
   ]
 
-  chartRef.value.update(750)
+  chartRef.value.update()
 }
 
 const destroyChart = () => {

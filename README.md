@@ -38,8 +38,8 @@ Props use the same structure as ChartJS arguments and are passed to the ChartJS 
 | `data` | `ChartData` | yes | — | Passed straight to ChartJS |
 | `options` | `ChartOptions` | no | `{}` | Passed straight to ChartJS |
 | `plugins` | `Plugin[]` | no | `[]` | Inline plugins, read once when the chart is created |
-| `height` | `number` | no | — | Only meaningful with `responsive: false` |
-| `width` | `number` | no | — | Only meaningful with `responsive: false` |
+| `height` | `number` | no | — | Needs `responsive: false`; applied when the chart is built |
+| `width` | `number` | no | — | Needs `responsive: false`; applied when the chart is built |
 
 ChartJS charts are responsive by default. For a fixed size, set `height` and `width` and turn `responsive` off in
 `options`.
@@ -49,6 +49,17 @@ work as you would expect.
 
 > **The chart does not re-render on its own when a prop changes.** Change the data or options, then call `update()` on
 > the component reference. See [Updating a chart](#updating-a-chart).
+
+`update()` re-reads `data` and `options` only. `type`, `height` and `width` are fixed when the ChartJS instance is
+built, so changing them needs a new instance:
+
+```javascript
+chartRef.value.destroy()
+chartRef.value.render()
+```
+
+`resize()` is not a substitute — it measures the canvas's container and writes that size back, which discards the
+`height` and `width` you set.
 
 ## Sandbox Examples
 

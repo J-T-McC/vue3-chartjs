@@ -30,8 +30,8 @@
           <select v-model="draft.type">
             <option v-for="name in Object.keys(presets)" :key="name" :value="name">{{ name }}</option>
           </select>
-          <small v-if="draft.type !== applied.type" class="warn">
-            changing type needs a re-create, not an update
+          <small v-if="needsRecreate" class="warn">
+            needs a re-create, not an update
           </small>
         </div>
       </fieldset>
@@ -42,7 +42,10 @@
           <label>height <input v-model.number="draft.height" type="number" min="0" placeholder="auto" /></label>
           <label>width <input v-model.number="draft.width" type="number" min="0" placeholder="auto" /></label>
         </div>
-        <small>Only applied when <code>options.responsive</code> is <code>false</code>.</small>
+        <small>
+          Only applied when <code>options.responsive</code> is <code>false</code>, and only on a re-create —
+          chart.js sizes the canvas when the instance is built.
+        </small>
       </fieldset>
 
       <fieldset>
@@ -124,6 +127,12 @@ const draft = reactive({ type: '', height: null, width: null, data: '', options:
 // deep-proxying large datasets buys nothing here.
 const applied = shallowRef({ type: '', height: undefined, width: undefined, data: {}, options: {} })
 
+const needsRecreate = computed(() =>
+  draft.type !== applied.value.type ||
+  (draft.height || undefined) !== applied.value.height ||
+  (draft.width || undefined) !== applied.value.width
+)
+
 const frameStyle = computed(() =>
   applied.value.options && applied.value.options.responsive === false
     ? { display: 'inline-block', height: 'auto' }
@@ -172,13 +181,14 @@ const applyUpdate = async () => {
   const parsed = readDraft()
   if (!parsed) return
 
-  const typeChanged = draft.type !== applied.value.type
+  // update() only re-reads data and options. type, height and width are baked
+  // into the chart when it is constructed, so they need a fresh instance.
+  const mustRecreate = needsRecreate.value
   commit(parsed)
   await nextTick()
 
-  if (typeChanged) {
-    // update() only re-reads data and options, so a new type needs a fresh instance
-    error.value = 'type changed — re-created the chart, update() alone cannot switch type'
+  if (mustRecreate) {
+    error.value = 're-created the chart — update() cannot change type, height or width'
     return recreate()
   }
 

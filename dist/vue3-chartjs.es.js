@@ -84,7 +84,7 @@ const U = ["height", "width"], a = /* @__PURE__ */ m({
     }, l = () => {
       e.chart && (e.chart.destroy(), e.chart = null);
     }, g = (n = "default") => {
-      e.chart && (e.chart.data = { ...e.chart.data, ...e.props.data }, e.chart.options = { ...e.chart.options, ...e.props.options }, e.chart.update(n));
+      e.chart && (e.chart.data = e.props.data, e.chart.options = e.props.options, e.chart.update(n));
     }, D = () => {
       e.chart && e.chart.resize();
     }, u = () => {

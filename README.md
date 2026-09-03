@@ -62,6 +62,10 @@ chart.type = 'bar'                        // rebuilds
 built, so changing those rebuilds it. Both are debounced, so a burst of changes costs one update, and changing `height`
 and `width` together rebuilds once.
 
+A `data` change reassigns only the data, so state that plugins keep on `options` survives it — a chart zoomed with
+[`chartjs-plugin-zoom`](https://github.com/chartjs/chartjs-plugin-zoom) holds its range while its data updates.
+Changing `options`, or calling `update()` yourself, replaces the options object and resets that state.
+
 `update()` and the other methods below remain available for driving the chart explicitly.
 
 ## Playground

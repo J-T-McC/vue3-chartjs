@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import Vue3ChartJs from '../lib/main';
 import { Chart } from 'chart.js';
-import { createApp, ref } from 'vue';
+import { createApp, nextTick, reactive, ref } from 'vue';
 import { getDoughnutProps } from './chart.props';
 import { generateEventObject, generateChartJsEventListener } from '../lib/includes';
 import type { EventObject } from '../lib/includes';
@@ -439,5 +439,155 @@ describe('options isolation', () => {
 
     expect(Object.keys(callerOptions)).toEqual(['responsive']);
     expect(ref.chartJSState.chart.config.options).not.toBe(callerOptions);
+  });
+});
+
+describe('automatic rebuild on structural props', () => {
+  // the rebuild is debounced through a timer, then a tick for the new canvas
+  const settle = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await nextTick();
+  };
+
+  it('rebuilds when type changes', async () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+    expect(ref.chartJSState.chart.config.type).toEqual('doughnut');
+
+    await wrapper.setProps({ type: 'bar' });
+    await settle();
+
+    expect(ref.chartJSState.chart.config.type).toEqual('bar');
+  });
+
+  it('rebuilds when height or width change', async () => {
+    const doughnutProps = getDoughnutProps();
+    doughnutProps.options!.responsive = false;
+    doughnutProps.height = doughnutProps.width = 400;
+    const wrapper = factory(doughnutProps);
+    const ref = wrapper.vm as any;
+    expect(ref.chartJSState.chart.height).toEqual(400);
+
+    await wrapper.setProps({ height: 150, width: 250 });
+    await settle();
+
+    expect(ref.chartJSState.chart.height).toEqual(150);
+    expect(ref.chartJSState.chart.width).toEqual(250);
+  });
+
+  it('coalesces a burst of changes into one rebuild', async () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+
+    await wrapper.setProps({ type: 'bar' });
+    await wrapper.setProps({ type: 'line' });
+    await wrapper.setProps({ type: 'pie' });
+    await settle();
+
+    expect(ref.chartJSState.chart.config.type).toEqual('pie');
+    // one teardown for the burst, not three
+    expect(wrapper.emitted('afterDestroy')).toHaveLength(1);
+  });
+
+  it('does not rebuild when data changes, which chart.js mutates', async () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+    const chart = ref.chartJSState.chart;
+
+    await wrapper.setProps({
+      data: { labels: ['x'], datasets: [{ data: [1] }] },
+    });
+    await settle();
+
+    // same instance: a data watcher would loop, since chart.js writes
+    // resolved colours back onto the datasets it is given
+    expect(ref.chartJSState.chart).toBe(chart);
+    expect(wrapper.emitted('afterDestroy')).toBeUndefined();
+  });
+});
+
+describe('automatic updates from data and options', () => {
+  const settle = async () => {
+    for (let i = 0; i < 4; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await nextTick();
+    }
+  };
+
+  it('applies an in-place data mutation without an explicit update()', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    const ref = wrapper.vm as any;
+
+    data.datasets[0].data = [5, 6, 7, 8];
+    await settle();
+
+    expect(ref.chartJSState.chart.data.datasets[0].data).toEqual([5, 6, 7, 8]);
+  });
+
+  it('applies a replaced data object', async () => {
+    const state = reactive({ data: getDoughnutProps().data });
+    const wrapper = factory({ ...getDoughnutProps(), data: state.data });
+    const ref = wrapper.vm as any;
+
+    await wrapper.setProps({
+      data: { labels: ['x', 'y'], datasets: [{ data: [11, 22] }] },
+    });
+    await settle();
+
+    expect(ref.chartJSState.chart.data.datasets[0].data).toEqual([11, 22]);
+  });
+
+  it('applies an options change', async () => {
+    const options = reactive({ responsive: false, plugins: {} } as Record<string, any>);
+    const wrapper = factory({ ...getDoughnutProps(), options });
+    const ref = wrapper.vm as any;
+
+    options.plugins = { title: { display: true, text: 'Reactive' } };
+    await settle();
+
+    expect(ref.chartJSState.chart.options.plugins.title.text).toEqual('Reactive');
+  });
+
+  it('drops a pending update if the chart was destroyed first', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    const ref = wrapper.vm as any;
+
+    ref.destroy();
+    data.datasets[0].data = [3, 3, 3, 3];
+
+    await expect(settle()).resolves.not.toThrow();
+    expect(ref.chartJSState.chart).toBeNull();
+  });
+
+  it('leaves chart.options alone when only data changed', async () => {
+    // plugins keep state on chart.options — zoom stores its applied range in
+    // options.scales — so replacing it on every data change discards their work
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    const ref = wrapper.vm as any;
+    const optionsBefore = ref.chartJSState.chart.config.options;
+
+    data.datasets[0].data = [4, 3, 2, 1];
+    await settle();
+
+    expect(ref.chartJSState.chart.data.datasets[0].data).toEqual([4, 3, 2, 1]);
+    expect(ref.chartJSState.chart.config.options).toBe(optionsBefore);
+  });
+
+  it('costs a single update per change', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    await settle();
+    const atRest = wrapper.emitted('afterUpdate')?.length ?? 0;
+
+    data.datasets[0].data = [1, 2, 3, 4];
+    await settle();
+    expect((wrapper.emitted('afterUpdate')?.length ?? 0) - atRest).toEqual(1);
+
+    data.labels = ['w', 'x', 'y', 'z'];
+    await settle();
+    expect((wrapper.emitted('afterUpdate')?.length ?? 0) - atRest).toEqual(2);
   });
 });

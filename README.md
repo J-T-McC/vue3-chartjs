@@ -1,11 +1,16 @@
-# Vue3 ChartJS Wrapper
+<h1 align="center">Vue3 ChartJS Wrapper</h1>
 
-[![Coverage Status](https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main)](https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main)
-[![Tests](https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml/badge.svg)](https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
-![npm](https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs)
+<p align="center">
+  <a href="https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main"><img src="https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main" alt="Coverage Status"></a>
+  <a href="https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml"><img src="https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/J-T-McC/vue3-chartjs/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome"></a>
+  <a href="https://www.npmjs.com/package/@j-t-mcc/vue3-chartjs"><img src="https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs" alt="npm downloads"></a>
+</p>
 
-Basic [ChartJS 4](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
+<p align="center">
+  Basic <a href="https://www.chartjs.org/">ChartJS 4</a> wrapper for <a href="https://v3.vuejs.org/">Vue3</a><br>
+  <a href="https://j-t-mcc.github.io/vue3-chartjs/"><strong>Try the playground →</strong></a>
+</p>
 
 For the v2 API, see [v2.1.0](https://github.com/J-T-McC/vue3-chartjs/tree/v2.1.0)
 

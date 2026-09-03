@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import Vue3ChartJs from '../lib/main';
 import { Chart } from 'chart.js';
-import { createApp, nextTick, ref } from 'vue';
+import { createApp, nextTick, reactive, ref } from 'vue';
 import { getDoughnutProps } from './chart.props';
 import { generateEventObject, generateChartJsEventListener } from '../lib/includes';
 import type { EventObject } from '../lib/includes';
@@ -503,5 +503,64 @@ describe('automatic rebuild on structural props', () => {
     // resolved colours back onto the datasets it is given
     expect(ref.chartJSState.chart).toBe(chart);
     expect(wrapper.emitted('afterDestroy')).toBeUndefined();
+  });
+});
+
+describe('automatic updates from data and options', () => {
+  const settle = async () => {
+    for (let i = 0; i < 4; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await nextTick();
+    }
+  };
+
+  it('applies an in-place data mutation without an explicit update()', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    const ref = wrapper.vm as any;
+
+    data.datasets[0].data = [5, 6, 7, 8];
+    await settle();
+
+    expect(ref.chartJSState.chart.data.datasets[0].data).toEqual([5, 6, 7, 8]);
+  });
+
+  it('applies a replaced data object', async () => {
+    const state = reactive({ data: getDoughnutProps().data });
+    const wrapper = factory({ ...getDoughnutProps(), data: state.data });
+    const ref = wrapper.vm as any;
+
+    await wrapper.setProps({
+      data: { labels: ['x', 'y'], datasets: [{ data: [11, 22] }] },
+    });
+    await settle();
+
+    expect(ref.chartJSState.chart.data.datasets[0].data).toEqual([11, 22]);
+  });
+
+  it('applies an options change', async () => {
+    const options = reactive({ responsive: false, plugins: {} } as Record<string, any>);
+    const wrapper = factory({ ...getDoughnutProps(), options });
+    const ref = wrapper.vm as any;
+
+    options.plugins = { title: { display: true, text: 'Reactive' } };
+    await settle();
+
+    expect(ref.chartJSState.chart.options.plugins.title.text).toEqual('Reactive');
+  });
+
+  it('costs a single update per change', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    await settle();
+    const atRest = wrapper.emitted('afterUpdate')?.length ?? 0;
+
+    data.datasets[0].data = [1, 2, 3, 4];
+    await settle();
+    expect((wrapper.emitted('afterUpdate')?.length ?? 0) - atRest).toEqual(1);
+
+    data.labels = ['w', 'x', 'y', 'z'];
+    await settle();
+    expect((wrapper.emitted('afterUpdate')?.length ?? 0) - atRest).toEqual(2);
   });
 });

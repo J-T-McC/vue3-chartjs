@@ -98,6 +98,7 @@ const render = () => {
     return chartJSState.chart.update();
   }
 
+
   chartJSState.chart = new Chart(chartRef.value.getContext('2d') as CanvasRenderingContext2D, {
     type: chartJSState.props.type,
     data: chartJSState.props.data,
@@ -114,28 +115,40 @@ defineExpose({
   resize,
 });
 
-// type, height and width are fixed when the chart is constructed, so a change
-// needs a new instance. They are safe to watch: chart.js never writes to them,
-// unlike data, whose datasets it decorates with resolved colours.
+// Every prop is reactive. type, height and width are fixed when the chart is
+// constructed, so they rebuild it; data and options are re-read by update().
+//
+// Watching data deeply is safe despite chart.js writing resolved colours back
+// onto the datasets it is handed: it only fills in what is missing, so the
+// watcher settles instead of looping. options is not written to at all, since
+// chart.js is handed a copy.
 let rebuildTimer: ReturnType<typeof setTimeout> | undefined;
+let updateTimer: ReturnType<typeof setTimeout> | undefined;
 
-watch(
-  () => [props.type, props.height, props.width],
-  () => {
-    // coalesce a burst of changes into a single rebuild
-    clearTimeout(rebuildTimer);
-    rebuildTimer = setTimeout(() => {
-      destroy();
-      canvasKey.value += 1;
-      nextTick(render);
-    }, 0);
-  }
-);
+// coalesce bursts, so setting height and width together does the work once
+const scheduleRebuild = () => {
+  clearTimeout(rebuildTimer);
+  rebuildTimer = setTimeout(() => {
+    destroy();
+    canvasKey.value += 1;
+    nextTick(render);
+  }, 0);
+};
+
+const scheduleUpdate = () => {
+  clearTimeout(updateTimer);
+  updateTimer = setTimeout(() => update(), 0);
+};
+
+watch(() => [props.type, props.height, props.width], scheduleRebuild);
+watch(() => props.data, scheduleUpdate, { deep: true });
+watch(() => props.options, scheduleUpdate, { deep: true });
 
 onMounted(() => render());
 
 onBeforeUnmount(() => {
   clearTimeout(rebuildTimer);
+  clearTimeout(updateTimer);
   destroy();
 });
 </script>

@@ -75,6 +75,47 @@ const presets = {
     },
     options: { responsive: true, maintainAspectRatio: false }
   },
+  scatter: {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Samples',
+          data: [
+            { x: -10, y: 0 }, { x: 0, y: 10 }, { x: 10, y: 5 }, { x: 15, y: 22 },
+            { x: 22, y: 14 }, { x: 30, y: 28 }, { x: 38, y: 19 }
+          ],
+          backgroundColor: '#41B883'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { x: { type: 'linear', position: 'bottom' } }
+    }
+  },
+  bubble: {
+    type: 'bubble',
+    data: {
+      datasets: [
+        {
+          label: 'Clusters',
+          data: [
+            { x: 10, y: 20, r: 8 }, { x: 15, y: 10, r: 14 }, { x: 26, y: 12, r: 6 },
+            { x: 30, y: 25, r: 20 }, { x: 40, y: 18, r: 11 }
+          ],
+          backgroundColor: 'rgba(65, 184, 131, 0.6)'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      // headroom so edge bubbles are not clipped by the axis bounds
+      scales: { x: { min: 0, max: 50 }, y: { min: 0, max: 35 } }
+    }
+  },
   polarArea: {
     type: 'polarArea',
     data: {

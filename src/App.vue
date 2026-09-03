@@ -31,9 +31,6 @@
           <select v-model="draft.type">
             <option v-for="name in Object.keys(presets)" :key="name" :value="name">{{ name }}</option>
           </select>
-          <small v-if="draft.type !== applied.type">
-            applied on update() — the component rebuilds itself
-          </small>
         </div>
       </fieldset>
 

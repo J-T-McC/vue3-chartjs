@@ -212,9 +212,11 @@ describe('component methods', () => {
     const chart = ref.chartJSState.chart;
     expect(wrapper.emitted('afterInit')).toHaveLength(1);
     expect(chart.options.plugins.title.display).toBeFalsy();
-    doughnutProps.options!.plugins!.title = {
-      text: 'Updated',
-      display: true
+    doughnutProps.options!.plugins = {
+      title: {
+        text: 'Updated',
+        display: true
+      }
     };
     ref.update();
     expect(wrapper.emitted('afterUpdate')).toHaveLength(1);
@@ -376,5 +378,66 @@ describe('event cancellation', () => {
     expect(calls).toEqual(3);
     // first update cancelled, the other two ran to completion
     expect(wrapper.emitted('afterUpdate')).toHaveLength(2);
+  });
+});
+
+describe('update() and the chart.js options proxy', () => {
+  // chart.js resolves options behind a proxy whose get handler assumes string
+  // keys. Reading a symbol off it throws, so update() must assign rather than
+  // copy. jsdom charts never reach that state, so the proxy is simulated here.
+  const resolvedOptionsProxy = (onSymbolRead: () => void) => {
+    const cacheMarker = Symbol('cachedOptions');
+    return new Proxy({ responsive: true } as Record<string, unknown>, {
+      get (target, key) {
+        if (typeof key !== 'string') {
+          onSymbolRead();
+          throw new TypeError('name.startsWith is not a function');
+        }
+        return target[key as string];
+      },
+      ownKeys: (target) => [...Reflect.ownKeys(target), cacheMarker],
+      getOwnPropertyDescriptor: () => ({ configurable: true, enumerable: true, value: 1 }),
+    });
+  };
+
+  it('assigns options instead of copying them', () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
+
+    let symbolWasRead = false;
+    let assigned: unknown;
+    Object.defineProperty(ref.chartJSState.chart, 'options', {
+      get: () => resolvedOptionsProxy(() => { symbolWasRead = true; }),
+      set: (value) => { assigned = value; },
+      configurable: true,
+    });
+
+    try {
+      ref.update();
+    } catch {
+      // chart.js internals fail against the stand-in proxy; only the read matters
+    }
+
+    expect(symbolWasRead).toBe(false);
+    expect(assigned).toEqual(ref.chartJSState.props.options);
+    expect(assigned).not.toBe(ref.chartJSState.props.options);
+  });
+});
+
+describe('options isolation', () => {
+  it('does not write chart.js internals back onto the caller\'s options', () => {
+    const doughnutProps = getDoughnutProps();
+    const callerOptions = doughnutProps.options!;
+    const wrapper = factory(doughnutProps);
+    const ref = wrapper.vm as any;
+
+    // chart.js derives `plugins` and `scales` while resolving; they belong on
+    // the chart, not on the object the consumer handed us
+    expect(Object.keys(callerOptions)).toEqual(['responsive']);
+
+    ref.update();
+
+    expect(Object.keys(callerOptions)).toEqual(['responsive']);
+    expect(ref.chartJSState.chart.config.options).not.toBe(callerOptions);
   });
 });

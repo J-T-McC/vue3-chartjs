@@ -83,6 +83,11 @@ const G = ["height", "width"], s = /* @__PURE__ */ C({
       props: r
     }, l = () => {
       e.chart && (e.chart.destroy(), e.chart = null);
+<<<<<<< HEAD
+=======
+    }, g = (n = "default") => {
+      e.chart && (e.chart.data = e.props.data, e.chart.options = { ...e.props.options }, e.chart.update(n));
+>>>>>>> origin/main
     }, D = () => {
       e.chart && (e.chart.data = e.props.data);
     }, b = () => {

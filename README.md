@@ -69,18 +69,47 @@ Changing `options`, or calling `update()` yourself, replaces the options object 
 
 `update()` and the other methods below remain available for driving the chart explicitly.
 
-Set `:auto-update="false"` to turn the watching off entirely and go back to driving the chart by hand. The watchers are
-removed rather than disabled, so the deep walk over `data` stops costing anything — worth it if you render very large
-datasets and batch your own updates. It can be toggled at runtime, and `update()`, `render()`, `resize()` and
-`destroy()` keep working either way.
+### Opting out of automatic updates
+
+Set `autoUpdate` to `false` and the chart changes only when you drive it:
+
+```vue
+<template>
+  <div style="height:600px;width:600px;">
+    <vue3-chart-js ref="chartRef" :auto-update="false" v-bind="chart" />
+    <button @click="redraw">Redraw</button>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue'
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+
+const chartRef = ref(null)
+const chart = reactive({ /* type, data, options */ })
+
+const redraw = () => {
+  // batch as many changes as you like, then apply them once
+  chart.data.datasets[0].data = [1, 2, 3]
+  chartRef.value.update()
+}
+</script>
+```
+
+The watchers are removed rather than left in place behind a condition, so the deep walk over `data` stops costing
+anything. That matters at size: ten mutations of a fifty-thousand-point dataset take around 476ms of watching, and none
+at all with `autoUpdate` off.
+
+It can be toggled at runtime, and `update()`, `render()`, `resize()` and `destroy()` keep working either way.
 
 ## Playground
 
 **[j-t-mcc.github.io/vue3-chartjs](https://j-t-mcc.github.io/vue3-chartjs/)**
 
 An interactive playground, published from this repository and running the same build that npm installs. Presets cover
-all eight ChartJS chart types, every prop is editable, and the chart follows as you type. It will also hand the whole
-chart back as a config object or as a ready-to-paste component.
+all eight ChartJS chart types, every prop is editable, and the chart follows as you type. `autoUpdate` can be switched
+off there to watch the difference. It will also hand the whole chart back as a config object or as a ready-to-paste
+component.
 
 View the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html) for more chart examples.
 

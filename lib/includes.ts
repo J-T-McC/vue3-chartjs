@@ -31,7 +31,6 @@ const chartJsEventNames: string[] = [
   'afterTooltipDraw',
   'afterDraw',
   'afterRender',
-  'resize',
   'reset',
   'beforeDestroy',
   'afterDestroy',

@@ -31,7 +31,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "eslint lib/** && jest --coverage --preset ts-jest && vite build && vue-tsc --noEmit false",
+    "build": "eslint lib/** && vue-tsc --noEmit && jest --coverage --preset ts-jest && vite build",
     "test": "jest --coverage --preset ts-jest",
     "lint": "eslint lib/**",
     "typecheck": "vue-tsc --noEmit",

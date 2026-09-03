@@ -1,4 +1,4 @@
-import { defineComponent as L, ref as E, watch as o, onMounted as R, onBeforeUnmount as z, openBlock as O, createElementBlock as V, nextTick as G } from "vue";
+import { defineComponent as L, ref as E, watch as i, onMounted as R, onBeforeUnmount as z, openBlock as O, createElementBlock as V, nextTick as G } from "vue";
 import { registerables as P, Chart as m } from "chart.js";
 const U = [
   "install",
@@ -31,7 +31,6 @@ const U = [
   "afterTooltipDraw",
   "afterDraw",
   "afterRender",
-  "resize",
   "reset",
   "beforeDestroy",
   "afterDestroy",
@@ -68,9 +67,9 @@ const W = ["height", "width"], n = /* @__PURE__ */ L({
     autoUpdate: { type: Boolean, default: !0 }
   },
   emits: U,
-  setup(a, { expose: t, emit: i }) {
+  setup(a, { expose: t, emit: o }) {
     P !== void 0 && m.register(...P);
-    const r = a, _ = i, u = E(null), D = E(0), e = {
+    const r = a, _ = o, u = E(null), D = E(0), e = {
       chart: null,
       plugins: [
         U.reduce((s, T) => {
@@ -124,18 +123,18 @@ const W = ["height", "width"], n = /* @__PURE__ */ L({
     let g = [];
     const B = () => {
       g = [
-        o(() => [r.type, r.height, r.width], C),
-        o(() => r.data, () => {
+        i(() => [r.type, r.height, r.width], C),
+        i(() => r.data, () => {
           p = !0, y();
         }, { deep: !0 }),
-        o(() => r.options, () => {
+        i(() => r.options, () => {
           h = !0, y();
         }, { deep: !0 })
       ];
     }, w = () => {
       g.forEach((s) => s()), g = [], clearTimeout(f), clearTimeout(d);
     };
-    return o(
+    return i(
       () => r.autoUpdate,
       (s) => s ? B() : w(),
       { immediate: !0 }
@@ -154,8 +153,8 @@ n.registerGlobalPlugins = (a) => {
   m.register(...a);
 };
 n.install = (a, t = {}) => {
-  var i;
-  a.component(n.name ?? "Vue3ChartJs", n), (i = t == null ? void 0 : t.plugins) != null && i.length && n.registerGlobalPlugins(t.plugins);
+  var o;
+  a.component(n.name ?? "Vue3ChartJs", n), (o = t == null ? void 0 : t.plugins) != null && o.length && n.registerGlobalPlugins(t.plugins);
 };
 export {
   n as default

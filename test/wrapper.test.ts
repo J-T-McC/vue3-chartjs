@@ -549,6 +549,33 @@ describe('automatic updates from data and options', () => {
     expect(ref.chartJSState.chart.options.plugins.title.text).toEqual('Reactive');
   });
 
+  it('drops a pending update if the chart was destroyed first', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    const ref = wrapper.vm as any;
+
+    ref.destroy();
+    data.datasets[0].data = [3, 3, 3, 3];
+
+    await expect(settle()).resolves.not.toThrow();
+    expect(ref.chartJSState.chart).toBeNull();
+  });
+
+  it('leaves chart.options alone when only data changed', async () => {
+    // plugins keep state on chart.options — zoom stores its applied range in
+    // options.scales — so replacing it on every data change discards their work
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data });
+    const ref = wrapper.vm as any;
+    const optionsBefore = ref.chartJSState.chart.config.options;
+
+    data.datasets[0].data = [4, 3, 2, 1];
+    await settle();
+
+    expect(ref.chartJSState.chart.data.datasets[0].data).toEqual([4, 3, 2, 1]);
+    expect(ref.chartJSState.chart.config.options).toBe(optionsBefore);
+  });
+
   it('costs a single update per change', async () => {
     const data = reactive(getDoughnutProps().data);
     const wrapper = factory({ ...getDoughnutProps(), data });

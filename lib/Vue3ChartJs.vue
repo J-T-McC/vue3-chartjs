@@ -77,12 +77,24 @@ const destroy = () => {
   }
 };
 
-const update = (mode: UpdateMode = 'default') => {
+const applyData = () => {
   if (chartJSState.chart) {
     chartJSState.chart.data = chartJSState.props.data;
+  }
+};
+
+const applyOptions = () => {
+  if (chartJSState.chart) {
     // shallow copy so chart.js resolves into an object this component owns,
     // rather than writing its derived options back onto the caller's
     chartJSState.chart.options = { ...chartJSState.props.options };
+  }
+};
+
+const update = (mode: UpdateMode = 'default') => {
+  if (chartJSState.chart) {
+    applyData();
+    applyOptions();
     chartJSState.chart.update(mode);
   }
 };
@@ -135,14 +147,35 @@ const scheduleRebuild = () => {
   }, 0);
 };
 
+// Replacing chart.options discards state plugins keep there — a zoomed chart
+// snaps back to its full range. So a data-only change reassigns data only.
+let pendingData = false;
+let pendingOptions = false;
+
 const scheduleUpdate = () => {
   clearTimeout(updateTimer);
-  updateTimer = setTimeout(() => update(), 0);
+  updateTimer = setTimeout(() => {
+    if (!chartJSState.chart) {
+      return;
+    }
+
+    if (pendingData) {
+      applyData();
+    }
+
+    if (pendingOptions) {
+      applyOptions();
+    }
+
+    pendingData = false;
+    pendingOptions = false;
+    chartJSState.chart.update();
+  }, 0);
 };
 
 watch(() => [props.type, props.height, props.width], scheduleRebuild);
-watch(() => props.data, scheduleUpdate, { deep: true });
-watch(() => props.options, scheduleUpdate, { deep: true });
+watch(() => props.data, () => { pendingData = true; scheduleUpdate(); }, { deep: true });
+watch(() => props.options, () => { pendingOptions = true; scheduleUpdate(); }, { deep: true });
 
 onMounted(() => render());
 

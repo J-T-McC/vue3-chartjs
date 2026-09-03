@@ -7,6 +7,7 @@ type __VLS_Props = {
     data: ChartData;
     options?: ChartOptions;
     plugins?: Plugin[];
+    autoUpdate?: boolean;
 };
 interface ChartJSState {
     chart: Chart | null;
@@ -29,6 +30,7 @@ declare const _default: import("vue").DefineComponent<__VLS_Props, {
 }, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<__VLS_Props> & Readonly<{}>, {
     plugins: Plugin[];
     options: ChartOptions;
+    autoUpdate: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export default _default;
 //# sourceMappingURL=Vue3ChartJs.vue.d.ts.map

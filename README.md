@@ -38,6 +38,7 @@ Props use the same structure as ChartJS arguments and are passed to the ChartJS 
 | `data` | `ChartData` | yes | — | Passed straight to ChartJS |
 | `options` | `ChartOptions` | no | `{}` | Passed straight to ChartJS |
 | `plugins` | `Plugin[]` | no | `[]` | Inline plugins, read once when the chart is created |
+| `autoUpdate` | `boolean` | no | `true` | Set `false` to stop watching props and drive the chart yourself |
 | `height` | `number` | no | — | Needs `responsive: false`; applied when the chart is built |
 | `width` | `number` | no | — | Needs `responsive: false`; applied when the chart is built |
 
@@ -67,6 +68,11 @@ A `data` change reassigns only the data, so state that plugins keep on `options`
 Changing `options`, or calling `update()` yourself, replaces the options object and resets that state.
 
 `update()` and the other methods below remain available for driving the chart explicitly.
+
+Set `:auto-update="false"` to turn the watching off entirely and go back to driving the chart by hand. The watchers are
+removed rather than disabled, so the deep walk over `data` stops costing anything — worth it if you render very large
+datasets and batch your own updates. It can be toggled at runtime, and `update()`, `render()`, `resize()` and
+`destroy()` keep working either way.
 
 ## Playground
 
@@ -460,11 +466,13 @@ doughnutChart.data.datasets[0].data = [1, 2, 3]
 is built, so changing those rebuilds it. Both are debounced, so a burst of changes costs one update.
 
 Existing `update()` calls are harmless and still useful for choosing a transition mode, so nothing has to be removed to
-upgrade. Two things are worth knowing:
+upgrade — and `:auto-update="false"` restores the v2 behaviour outright if you would rather keep driving the chart
+yourself. Two things are worth knowing:
 
 - `data` is watched deeply. Vue walks the whole structure on each change, which is around 1ms for a thousand points and
   closer to 45ms for fifty thousand. If you render very large datasets and were batching updates deliberately, measure
-  before assuming the automatic path is equivalent.
+  before assuming the automatic path is equivalent — or set `:auto-update="false"`, which removes the watchers and the
+  walk with them.
 - A `data` change reassigns only the data, so plugin state kept on `options` survives it. Changing `options`, or
   calling `update()` yourself, replaces that object and resets it — a zoomed chart returns to its full range.
 

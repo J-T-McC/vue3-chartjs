@@ -17,6 +17,7 @@ declare type __VLS_Props = {
     data: ChartData;
     options?: ChartOptions;
     plugins?: Plugin_2[];
+    autoUpdate?: boolean;
 };
 
 declare interface ChartJSState {
@@ -41,6 +42,7 @@ resize: () => void;
 }, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<__VLS_Props> & Readonly<{}>, {
 plugins: Plugin_2[];
 options: ChartOptions;
+autoUpdate: boolean;
 }, {}, {}, {}, string, ComponentProvideOptions, false, {
 chartRef: HTMLCanvasElement;
 }, HTMLCanvasElement>;

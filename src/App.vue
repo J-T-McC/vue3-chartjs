@@ -2,7 +2,8 @@
   <header>
     <h1>vue3-chartjs playground</h1>
     <p>
-      Edit any prop below and re-render. Everything on this page is the published component —
+      Edit any prop below and the chart follows — the component watches its props. The buttons call the
+      exposed methods directly. Everything here is the published component —
       <a href="https://github.com/J-T-McC/vue3-chartjs">source on GitHub</a>.
     </p>
   </header>
@@ -127,7 +128,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, reactive, ref, shallowRef } from 'vue'
+import { computed, nextTick, reactive, ref, shallowRef, watch } from 'vue'
 import { presets } from './presets'
 
 const updateModes = ['default', 'none', 'reset', 'resize', 'show', 'hide', 'active']
@@ -144,11 +145,6 @@ const draft = reactive({ type: '', height: null, width: null, data: '', options:
 // shallowRef rather than reactive: the whole config is swapped at once, and
 // deep-proxying large datasets buys nothing here.
 const applied = shallowRef({ type: '', height: undefined, width: undefined, data: {}, options: {} })
-
-const sizeChanged = computed(() =>
-  (draft.height || undefined) !== applied.value.height ||
-  (draft.width || undefined) !== applied.value.width
-)
 
 const sizeIgnored = computed(() => {
   if (!draft.height && !draft.width) return false
@@ -211,19 +207,19 @@ const applyDraft = () => {
   return true
 }
 
+// the component watches its props, so committing a valid draft is enough to
+// move the chart; typing is debounced so half-written JSON is not applied
+let applyTimer
+watch(draft, () => {
+  clearTimeout(applyTimer)
+  applyTimer = setTimeout(() => applyDraft(), 400)
+}, { deep: true })
+
 const applyUpdate = async () => {
-  const typePending = draft.type !== applied.value.type
-  const sizePending = sizeChanged.value
   if (!applyDraft()) return
   await nextTick()
 
   chartRef.value?.update(mode.value)
-
-  // type, height and width are picked up by the component's own watcher
-  if (typePending || sizePending) {
-    const rebuilt = [typePending && 'type', sizePending && 'height/width'].filter(Boolean).join(' and ')
-    error.value = `${rebuilt} changed — the component rebuilt the chart automatically`
-  }
 }
 
 /** The two library calls, run explicitly rather than through the watcher. */

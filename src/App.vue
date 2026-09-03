@@ -74,6 +74,18 @@
       </fieldset>
 
       <fieldset>
+        <legend>reactivity</legend>
+        <div class="row wrap">
+          <label class="check">
+            <input v-model="autoUpdate" type="checkbox" />
+            <code>:auto-update</code>
+          </label>
+          <small v-if="autoUpdate">The component watches its props, so edits apply as you type.</small>
+          <small v-else class="warn">Watching is off — edits are staged; use the buttons to apply them.</small>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>update mode</legend>
         <div class="row">
           <select v-model="mode">
@@ -101,6 +113,7 @@
           v-if="alive"
           ref="chartRef"
           :key="instanceKey"
+          :auto-update="autoUpdate"
           :type="applied.type"
           :data="applied.data"
           :options="applied.options"
@@ -163,6 +176,7 @@ const alive = ref(true)
 const instanceKey = ref(0)
 const activePreset = ref('doughnut')
 const mode = ref('default')
+const autoUpdate = ref(true)
 const error = ref('')
 const events = ref([])
 
@@ -445,6 +459,8 @@ legend { padding: 0 .35rem; color: var(--muted); font-size: .8rem; text-transfor
 .row { display: flex; gap: .5rem; align-items: center; }
 .row.wrap { flex-wrap: wrap; }
 label { display: flex; gap: .35rem; align-items: center; color: var(--muted); }
+.check { color: var(--fg); cursor: pointer; }
+.check input { accent-color: var(--accent); }
 
 input, select, textarea {
   font: inherit;

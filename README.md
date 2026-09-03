@@ -1,11 +1,16 @@
-# Vue3 ChartJS Wrapper
+<h1 align="center">Vue3 ChartJS Wrapper</h1>
 
-[![Coverage Status](https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main)](https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main)
-[![Tests](https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml/badge.svg)](https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/J-T-McC/vue3-chartjs/pulls)
-![npm](https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs)
+<p align="center">
+  <a href="https://coveralls.io/github/J-T-McC/vue3-chartjs?branch=main"><img src="https://coveralls.io/repos/github/J-T-McC/vue3-chartjs/badge.svg?branch=main" alt="Coverage Status"></a>
+  <a href="https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml"><img src="https://github.com/J-T-McC/vue3-chartjs/actions/workflows/run-tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/J-T-McC/vue3-chartjs/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome"></a>
+  <a href="https://www.npmjs.com/package/@j-t-mcc/vue3-chartjs"><img src="https://img.shields.io/npm/dt/@j-t-mcc/vue3-chartjs" alt="npm downloads"></a>
+</p>
 
-Basic [ChartJS 4](https://www.chartjs.org/) wrapper for [Vue3](https://v3.vuejs.org/)
+<p align="center">
+  Basic <a href="https://www.chartjs.org/">ChartJS 4</a> wrapper for <a href="https://v3.vuejs.org/">Vue3</a><br>
+  <a href="https://j-t-mcc.github.io/vue3-chartjs/"><strong>Try the playground →</strong></a>
+</p>
 
 For the v2 API, see [v2.1.0](https://github.com/J-T-McC/vue3-chartjs/tree/v2.1.0)
 
@@ -38,6 +43,7 @@ Props use the same structure as ChartJS arguments and are passed to the ChartJS 
 | `data` | `ChartData` | yes | — | Passed straight to ChartJS |
 | `options` | `ChartOptions` | no | `{}` | Passed straight to ChartJS |
 | `plugins` | `Plugin[]` | no | `[]` | Inline plugins, read once when the chart is created |
+| `autoUpdate` | `boolean` | no | `true` | Set `false` to stop watching props and drive the chart yourself |
 | `height` | `number` | no | — | Needs `responsive: false`; applied when the chart is built |
 | `width` | `number` | no | — | Needs `responsive: false`; applied when the chart is built |
 
@@ -68,13 +74,47 @@ Changing `options`, or calling `update()` yourself, replaces the options object 
 
 `update()` and the other methods below remain available for driving the chart explicitly.
 
+### Opting out of automatic updates
+
+Set `autoUpdate` to `false` and the chart changes only when you drive it:
+
+```vue
+<template>
+  <div style="height:600px;width:600px;">
+    <vue3-chart-js ref="chartRef" :auto-update="false" v-bind="chart" />
+    <button @click="redraw">Redraw</button>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue'
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+
+const chartRef = ref(null)
+const chart = reactive({ /* type, data, options */ })
+
+const redraw = () => {
+  // batch as many changes as you like, then apply them once
+  chart.data.datasets[0].data = [1, 2, 3]
+  chartRef.value.update()
+}
+</script>
+```
+
+The watchers are removed rather than left in place behind a condition, so the deep walk over `data` stops costing
+anything. That matters at size: ten mutations of a fifty-thousand-point dataset take around 476ms of watching, and none
+at all with `autoUpdate` off.
+
+It can be toggled at runtime, and `update()`, `render()`, `resize()` and `destroy()` keep working either way.
+
 ## Playground
 
 **[j-t-mcc.github.io/vue3-chartjs](https://j-t-mcc.github.io/vue3-chartjs/)**
 
 An interactive playground, published from this repository and running the same build that npm installs. Presets cover
-all eight ChartJS chart types, every prop is editable, and the chart follows as you type. It will also hand the whole
-chart back as a config object or as a ready-to-paste component.
+all eight ChartJS chart types, every prop is editable, and the chart follows as you type. `autoUpdate` can be switched
+off there to watch the difference. It will also hand the whole chart back as a config object or as a ready-to-paste
+component.
 
 View the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html) for more chart examples.
 
@@ -460,11 +500,13 @@ doughnutChart.data.datasets[0].data = [1, 2, 3]
 is built, so changing those rebuilds it. Both are debounced, so a burst of changes costs one update.
 
 Existing `update()` calls are harmless and still useful for choosing a transition mode, so nothing has to be removed to
-upgrade. Two things are worth knowing:
+upgrade — and `:auto-update="false"` restores the v2 behaviour outright if you would rather keep driving the chart
+yourself. Two things are worth knowing:
 
 - `data` is watched deeply. Vue walks the whole structure on each change, which is around 1ms for a thousand points and
   closer to 45ms for fifty thousand. If you render very large datasets and were batching updates deliberately, measure
-  before assuming the automatic path is equivalent.
+  before assuming the automatic path is equivalent — or set `:auto-update="false"`, which removes the watchers and the
+  walk with them.
 - A `data` change reassigns only the data, so plugin state kept on `options` survives it. Changing `options`, or
   calling `update()` yourself, replaces that object and resets it — a zoomed chart returns to its full range.
 

@@ -591,3 +591,69 @@ describe('automatic updates from data and options', () => {
     expect((wrapper.emitted('afterUpdate')?.length ?? 0) - atRest).toEqual(2);
   });
 });
+
+describe('autoUpdate opt-out', () => {
+  const settle = async () => {
+    for (let i = 0; i < 4; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await nextTick();
+    }
+  };
+
+  // chart.data is the props object by reference, so its contents follow a
+  // mutation either way. What autoUpdate governs is whether the chart is
+  // told to redraw, which is what the emitted hooks record.
+  const updates = (wrapper: ReturnType<typeof factory>) =>
+    wrapper.emitted('afterUpdate')?.length ?? 0;
+
+  it('does not redraw on prop changes when disabled', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data, autoUpdate: false });
+    const ref = wrapper.vm as any;
+    const before = updates(wrapper);
+
+    data.datasets[0].data = [9, 9, 9, 9];
+    await wrapper.setProps({ options: { responsive: false } });
+    await settle();
+
+    expect(updates(wrapper)).toEqual(before);
+  });
+
+  it('does not rebuild on a type change when disabled', async () => {
+    const wrapper = factory({ ...getDoughnutProps(), autoUpdate: false });
+    const ref = wrapper.vm as any;
+
+    await wrapper.setProps({ type: 'bar' });
+    await settle();
+
+    expect(ref.chartJSState.chart.config.type).toEqual('doughnut');
+    expect(wrapper.emitted('afterDestroy')).toBeUndefined();
+  });
+
+  it('still applies an explicit update() when disabled', async () => {
+    const wrapper = factory({ ...getDoughnutProps(), autoUpdate: false });
+    const ref = wrapper.vm as any;
+    const before = updates(wrapper);
+
+    ref.update();
+
+    expect(updates(wrapper)).toEqual(before + 1);
+  });
+
+  it('starts and stops watching as the prop is toggled', async () => {
+    const data = reactive(getDoughnutProps().data);
+    const wrapper = factory({ ...getDoughnutProps(), data, autoUpdate: false });
+
+    await wrapper.setProps({ autoUpdate: true });
+    const enabled = updates(wrapper);
+    data.datasets[0].data = [1, 1, 1, 1];
+    await settle();
+    expect(updates(wrapper)).toEqual(enabled + 1);
+
+    await wrapper.setProps({ autoUpdate: false });
+    const disabled = updates(wrapper);
+    data.datasets[0].data = [2, 2, 2, 2];
+    await settle();
+    expect(updates(wrapper)).toEqual(disabled);
+  });
+});

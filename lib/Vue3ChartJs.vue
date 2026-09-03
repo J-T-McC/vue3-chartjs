@@ -21,9 +21,11 @@ const props = withDefaults(defineProps<{
   data: ChartData;
   options?: ChartOptions;
   plugins?: Plugin[];
+  autoUpdate?: boolean;
 }>(), {
   options: () => ({}),
   plugins: () => ([]),
+  autoUpdate: true,
 });
 
 const emit = defineEmits(chartJsEventNames);
@@ -173,15 +175,36 @@ const scheduleUpdate = () => {
   }, 0);
 };
 
-watch(() => [props.type, props.height, props.width], scheduleRebuild);
-watch(() => props.data, () => { pendingData = true; scheduleUpdate(); }, { deep: true });
-watch(() => props.options, () => { pendingOptions = true; scheduleUpdate(); }, { deep: true });
+// The watchers are created and torn down rather than left in place behind a
+// condition: a deep watcher walks the whole of data on every change even when
+// its callback does nothing, and avoiding that walk is the point of opting out.
+let unwatch: (() => void)[] = [];
+
+const startWatching = () => {
+  unwatch = [
+    watch(() => [props.type, props.height, props.width], scheduleRebuild),
+    watch(() => props.data, () => { pendingData = true; scheduleUpdate(); }, { deep: true }),
+    watch(() => props.options, () => { pendingOptions = true; scheduleUpdate(); }, { deep: true }),
+  ];
+};
+
+const stopWatching = () => {
+  unwatch.forEach((stop) => stop());
+  unwatch = [];
+  clearTimeout(rebuildTimer);
+  clearTimeout(updateTimer);
+};
+
+watch(
+  () => props.autoUpdate,
+  (enabled) => (enabled ? startWatching() : stopWatching()),
+  { immediate: true }
+);
 
 onMounted(() => render());
 
 onBeforeUnmount(() => {
-  clearTimeout(rebuildTimer);
-  clearTimeout(updateTimer);
+  stopWatching();
   destroy();
 });
 </script>

@@ -53,7 +53,9 @@ jobs:
             exit 1
           fi
 
+      # the standalone coveralls npm package is deprecated and unmaintained
       - name: Upload coverage to Coveralls
-        run: cat ./coverage/lcov.info | pnpm dlx coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        uses: coverallsapp/github-action@v2
+        with:
+          file: ./coverage/lcov.info
+          format: lcov

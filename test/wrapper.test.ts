@@ -124,12 +124,6 @@ describe('init', () => {
     expect(plugins['globallyImportedTestPlugin']).toBeTruthy();
   });
 
-  it('ChartJS instance is accessible', () => {
-    const wrapper = factory(getDoughnutProps());
-    const ref = wrapper.vm as any;
-    expect(ref.chartJSState.chart).toBeTruthy();
-  });
-
   it('defaults options to empty object', () => {
     const doughnutProps = getDoughnutProps();
     delete doughnutProps.options;
@@ -146,15 +140,14 @@ describe('init', () => {
     expect(props.plugins).toEqual([]);
   });
 
-  it("calls render on mounted", () => {
-    const doughnutProps = getDoughnutProps();
-    const renderSpy = jest.spyOn(Vue3ChartJsPlugin, "render");
+  it('creates the chart on mount without an explicit render()', () => {
+    const wrapper = factory(getDoughnutProps());
+    const ref = wrapper.vm as any;
 
-    mount(Vue3ChartJsPlugin, {
-      props: doughnutProps
-    });
-
-    expect(renderSpy).toHaveBeenCalled();
+    // the init hooks only fire when a Chart is constructed
+    expect(wrapper.emitted('beforeInit')).toHaveLength(1);
+    expect(wrapper.emitted('afterInit')).toHaveLength(1);
+    expect(ref.chartJSState.chart).toBeTruthy();
   });
 });
 

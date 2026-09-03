@@ -1,11 +1,25 @@
 <template>
   <header>
-    <h1>vue3-chartjs playground</h1>
+    <div class="titles">
+      <h1>vue3-chartjs playground</h1>
     <p>
       Edit any prop below and the chart follows — the component watches its props. The buttons call the
       exposed methods directly. Everything here is the published component —
       <a href="https://github.com/J-T-McC/vue3-chartjs">source on GitHub</a>.
     </p>
+    </div>
+    <div class="theme" role="group" aria-label="Colour theme">
+      <button
+        v-for="option in themes"
+        :key="option"
+        type="button"
+        :class="{ active: theme === option }"
+        :aria-pressed="theme === option"
+        @click="theme = option"
+      >
+        {{ option }}
+      </button>
+    </div>
   </header>
 
   <main>
@@ -126,9 +140,23 @@
 
 <script setup>
 import { computed, nextTick, reactive, ref, shallowRef, watch } from 'vue'
+import { Chart } from 'chart.js'
 import { presets } from './presets'
 
 const updateModes = ['default', 'none', 'reset', 'resize', 'show', 'hide', 'active']
+const themes = ['system', 'light', 'dark']
+
+const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('theme') : null
+const theme = ref(themes.includes(stored) ? stored : 'system')
+const systemDark = ref(false)
+
+if (typeof window !== 'undefined' && window.matchMedia) {
+  const query = window.matchMedia('(prefers-color-scheme: dark)')
+  systemDark.value = query.matches
+  query.addEventListener('change', (event) => { systemDark.value = event.matches })
+}
+
+const isDark = computed(() => (theme.value === 'system' ? systemDark.value : theme.value === 'dark'))
 
 const chartRef = ref(null)
 const alive = ref(true)
@@ -297,6 +325,30 @@ const copySnippet = async () => {
   setTimeout(() => { copied.value = false }, 1500)
 }
 
+// chart.js paints axis text and grid lines from its own defaults, so the chart
+// has to be told about the theme as well as the page
+const applyTheme = () => {
+  const root = document.documentElement
+  if (theme.value === 'system') {
+    root.removeAttribute('data-theme')
+  } else {
+    root.setAttribute('data-theme', theme.value)
+  }
+  localStorage.setItem('theme', theme.value)
+
+  Chart.defaults.color = isDark.value ? '#9198a1' : '#5b6470'
+  Chart.defaults.borderColor = isDark.value ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'
+}
+
+// applied before mount, so the first chart is already themed and nothing
+// has to be torn down to correct it
+applyTheme()
+
+watch([theme, isDark], () => {
+  applyTheme()
+  remount()
+})
+
 const resize = () => chartRef.value?.resize()
 
 const exportPng = () => {
@@ -324,13 +376,21 @@ loadPreset('doughnut')
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #0d1117;
     --fg: #e6edf3;
     --muted: #9198a1;
     --line: #30363d;
     --panel: #161b22;
   }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0d1117;
+  --fg: #e6edf3;
+  --muted: #9198a1;
+  --line: #30363d;
+  --panel: #161b22;
 }
 
 * { box-sizing: border-box; }
@@ -343,7 +403,19 @@ body {
   font: 15px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
 }
 
-header { max-width: 1200px; margin: 0 auto 1.5rem; }
+header {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.titles { flex: 1 1 460px; }
+.theme { display: flex; gap: .25rem; flex-shrink: 0; }
+.theme button { text-transform: capitalize; }
 h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
 header p { margin: 0; color: var(--muted); }
 a { color: var(--accent); }

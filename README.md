@@ -64,16 +64,15 @@ and `width` together rebuilds once.
 
 `update()` and the other methods below remain available for driving the chart explicitly.
 
-## Sandbox Examples
+## Playground
 
-* [Pie Chart](https://codesandbox.io/s/pie-chart-848by?file=/src/App.vue)
-* [Doughnut Chart](https://codesandbox.io/s/doughnut-chart-g7il4?file=/src/App.vue)
-* [Bar Chart](https://codesandbox.io/s/bar-chart-kog87?file=/src/App.vue)
-* [Radar Chart](https://codesandbox.io/s/radar-chart-j2dyp?file=/src/App.vue)
-* [Line Chart with Plugins](https://codesandbox.io/s/plugin-example-o4y3q?file=/src/App.vue)
-* [Events & Exports](https://codesandbox.io/s/events-and-exports-q5g9k?file=/src/App.vue)
+**[j-t-mcc.github.io/vue3-chartjs](https://j-t-mcc.github.io/vue3-chartjs/)**
 
-View the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html) for more examples.
+An interactive playground, published from this repository and running the same build that npm installs. Presets cover
+all eight ChartJS chart types, every prop is editable, and the chart follows as you type. It will also hand the whole
+chart back as a config object or as a ready-to-paste component.
+
+View the [ChartJS Docs](https://www.chartjs.org/docs/latest/samples/bar/vertical.html) for more chart examples.
 
 ## Events
 

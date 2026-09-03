@@ -195,15 +195,22 @@ const loadPreset = (name) => {
   draft.width = null
   draft.data = JSON.stringify(preset.data, null, 2)
   draft.options = JSON.stringify(preset.options, null, 2)
-  commit({ data: preset.data, options: preset.options })
-  remount()
+  applyDraft()
 }
+
+let lastApplied = ''
+const draftSnapshot = () => JSON.stringify([draft.type, draft.height, draft.width, draft.data, draft.options])
 
 /** Applies the editors to the chart. Returns false when the JSON is invalid. */
 const applyDraft = () => {
+  const snapshot = draftSnapshot()
+  if (snapshot === lastApplied) return true
+
   const parsed = readDraft()
   if (!parsed) return false
+
   commit(parsed)
+  lastApplied = snapshot
   return true
 }
 

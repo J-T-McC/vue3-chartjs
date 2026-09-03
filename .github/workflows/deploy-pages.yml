@@ -31,19 +31,18 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
 
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      # enablement: true turns Pages on the first time this runs, so the site
-      # needs no manual setup in repository settings
+      # Pages must already be enabled with "GitHub Actions" as its source.
+      # enablement: true cannot do it: creating a Pages site needs more than the
+      # workflow token is allowed to have, whatever permissions are declared.
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       # the playground imports the library through package.json, so it has to
       # be built before the site that consumes it

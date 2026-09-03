@@ -442,6 +442,32 @@ const lineChart = {
 
 ## Migrating from v2
 
+### The chart tracks its props
+
+In v2 the component read its props once and nothing changed the chart until you called `update()` yourself. Every prop
+is now watched, so the calls that used to be required are not:
+
+```js
+// v2
+doughnutChart.data.datasets[0].data = [1, 2, 3]
+chartRef.value.update()
+
+// v3
+doughnutChart.data.datasets[0].data = [1, 2, 3]
+```
+
+`data` and `options` changes are applied by an update; `type`, `height` and `width` are fixed when the ChartJS instance
+is built, so changing those rebuilds it. Both are debounced, so a burst of changes costs one update.
+
+Existing `update()` calls are harmless and still useful for choosing a transition mode, so nothing has to be removed to
+upgrade. Two things are worth knowing:
+
+- `data` is watched deeply. Vue walks the whole structure on each change, which is around 1ms for a thousand points and
+  closer to 45ms for fifty thousand. If you render very large datasets and were batching updates deliberately, measure
+  before assuming the automatic path is equivalent.
+- A `data` change reassigns only the data, so plugin state kept on `options` survives it. Changing `options`, or
+  calling `update()` yourself, replaces that object and resets it — a zoomed chart returns to its full range.
+
 ### `preventDefault()` applies to one emission
 
 Previously a single `preventDefault()` call canceled that hook for the lifetime of the chart, because the event object
@@ -472,8 +498,8 @@ safe if you do. `beforeDestroy`, `afterDestroy`, `uninstall` and `stop` now fire
 
 ### Replacing a whole prop object works
 
-`update()` reads the live props, so assigning a new `data` or `options` object is picked up. Previously only in-place
-mutation of the original object worked.
+Assigning a new `data` or `options` object is picked up. In v2 the component held a snapshot taken at setup, so only
+in-place mutation of the original object had any effect.
 
 ### `update()` takes a transition mode
 

@@ -47,23 +47,22 @@ ChartJS charts are responsive by default. For a fixed size, set `height` and `wi
 Any attribute that is not a prop falls through to the underlying `<canvas>`, so `id`, `class`, `style` and `aria-*`
 work as you would expect.
 
-> **The chart does not re-render on its own when a prop changes.** Change the data or options, then call `update()` on
-> the component reference. See [Updating a chart](#updating-a-chart).
+> **The chart tracks its props.** Mutate or replace `data` and `options` and it updates itself; change `type`, `height`
+> or `width` and it rebuilds. See [Updating a chart](#updating-a-chart).
 
-`data` and `options` are read when you call `update()`.
-
-`type`, `height` and `width` are fixed when the ChartJS instance is built, so the component watches them and rebuilds
-the chart itself when they change. Nothing extra to call:
+Every prop is reactive. Change one and the chart follows — there is nothing to call:
 
 ```javascript
-// the chart rebuilds on its own
-chartType.value = 'bar'
+chart.data.datasets[0].data = [1, 2, 3]   // updates
+chart.options.plugins.title = { ... }     // updates
+chart.type = 'bar'                        // rebuilds
 ```
 
-Rebuilds are debounced, so changing `height` and `width` together rebuilds once.
+`data` and `options` are re-read by an update. `type`, `height` and `width` are fixed when the ChartJS instance is
+built, so changing those rebuilds it. Both are debounced, so a burst of changes costs one update, and changing `height`
+and `width` together rebuilds once.
 
-`data` is deliberately not watched. ChartJS writes resolved colours back onto the datasets it is given, so a deep
-watcher would be re-triggered by the update it caused. Call `update()` after changing data.
+`update()` and the other methods below remain available for driving the chart explicitly.
 
 ## Sandbox Examples
 
@@ -175,9 +174,9 @@ const beforeRenderLogic = (event) => {
 
 ### Updating a chart
 
-The chart does not watch its props. Change the data, then call `update()`.
-
-Both styles work: mutate the existing object, or replace it entirely.
+The chart watches its props, so changing them is enough. Both styles work: mutate the existing object, or replace it
+entirely. `update()` is shown here for the cases where you want to drive it explicitly, such as choosing a transition
+mode.
 
 ```vue
 <template>
